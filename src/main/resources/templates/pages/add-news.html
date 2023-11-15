@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+  <title>Неготино - Додај Новост</title>
+  <th:block th:replace="fragments/head"></th:block>
+</head>
+
+<body>
+  <th:block th:replace="fragments/navbar"></th:block>
+
+  <!-- Add News -->
+  <section class="post-news-area mt-5 mb-2">
+    <div class="container">
+      <div class="row justify-content-center">
+        <!-- Post Details Content Area -->
+        <div class="col-12 col-lg-8">
+          <form class="needs-validation mt-2" th:method="post" th:action="@{/}" th:object="${news}" enctype="multipart/form-data" novalidate>
+            <div class="post-details-title-area bg-overlay clearfix">
+              <!-- Post Content -->
+              <div class="image-upload-wrap-single-post">
+                <input class="file-upload-input-single-post" type='file' name="files" onchange="readURL(this);" accept="image/*" />
+                <div class="drag-text-single-post">
+                  <h3>Додади насловна фотографија</h3>
+                </div>
+              </div>
+              <div class="file-upload-content-single-post">
+                <img class="file-upload-image-single-post" alt="your image" />
+                <div class="image-title-wrap-single-post mt-2 mb-4">
+                  <button type="button" id="removeImage" onclick="removeUpload()" class="remove-image-single-post">Избриши <span class="image-title-single-post">Uploaded Image</span></button>
+                </div>
+              </div>
+              <!-- </div> -->
+            </div>
+            <div class="post-details-content mt-5 mb-100">
+              <div class="form-group">
+                <label for="exampleFormControlInput1"><b>Наслов</b></label>
+                <input type="text" th:field="*{title}" class="form-control" id="exampleFormControlInput1" placeholder="Наслов" required>
+                <div class="invalid-feedback">
+                  Воведи наслов
+                </div>
+              </div>
+              <div class="form-group">
+                <label for="exampleFormControlTextarea1"><b>Опиши ја новоста</b></label>
+                <textarea th:field="*{text}" class="form-control" id="exampleFormControlTextarea1" rows="12" placeholder="Опис на новоста" required></textarea>
+                <div class="invalid-feedback">
+                  Воведи опис на новоста
+                </div>
+              </div>
+              <div class="form-group">
+                <label for="exampleFormControlSelect1"><b>Категорија</b></label>
+                <select th:field="*{type}" class="form-control" id="exampleFormControlSelect1">
+                  <option th:value="Актуелно">Актуелно</option>
+                  <option th:value="Култура">Култура</option>
+                  <option th:value="Историја">Историја</option>
+                  <option th:value="Земјоделие">Земјоделие</option>
+                  <option th:value="Спорт">Спорт</option>
+                  <option th:value="Здравје">Здравје</option>
+                  <option th:value="Македонија">Македонија</option>
+                </select>
+              </div>
+
+              <button class="btn btn-dark float-right mt-3" type="submit">Сподели</button>
+            </div>
+          </form>
+        </div>
+
+        <!-- Sidebar Widget -->
+        <div class="col-12 col-sm-9 col-md-6 col-lg-4">
+          <div class="sidebar-area">
+
+            <!-- Latest News Widget -->
+            <div class="single-widget-area news-widget mb-30" th:if="${approvedNews != null and approvedNews.size() >= 9}">
+              <h4 class="border-bottom border-danger th:if">Последни Новости</h4>
+              <!-- Single News Area -->
+              <div class="single-blog-post d-flex style-4 mb-30" th:each="i : ${#numbers.sequence(0,8)}">
+                <!-- Blog Thumbnail -->
+                <div class="blog-thumbnail">
+                  <a href="#">
+                    <img class="latest-news" th:src=" 'data:image/jpeg;base64,'+ ${imageEncoder.generateBase64Image(approvedNews.get(i).getImgData(),defaultImageNews)}" alt="No image" />
+                  </a>
+                </div>
+                <!-- Blog Content -->
+                <div class="blog-content">
+                  <span th:text="${sdf.format(approvedNews.get(i).getDate())}" class="post-date"></span>
+                  <a th:text="${approvedNews.get(i).getTitle()}" th:href="|/news/single-post/${approvedNews.get(i).getId()}|" class="post-title"></a>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Modal -->
+  <th:block th:replace="fragments/modal"></th:block>
+
+  <th:block th:replace="fragments/footer"></th:block>
+
+  <!-- ##### All Javascript Script ##### -->
+  <th:block th:replace="fragments/js"></th:block>
+
+  <script>
+
+      (function() {
+        'use strict';
+        window.addEventListener('load', function() {
+          // Fetch all the forms we want to apply custom Bootstrap validation styles to
+          var forms = document.getElementsByClassName('needs-validation');
+          // Loop over them and prevent submission
+          var validation = Array.prototype.filter.call(forms, function(form) {
+            form.addEventListener('submit', function(event) {
+              if (form.checkValidity() === false) {
+                form.classList.add('was-validated');
+                event.preventDefault();
+                event.stopPropagation();
+              }
+              else
+              {
+                event.preventDefault();
+                event.stopPropagation();
+
+                var formData = new FormData($('.needs-validation')[0]);
+                $.ajax({
+                  url: "/news/add",
+                  method: "POST",
+                  data: formData,
+                  success: function (data, textStatus)
+                  {
+                    $("#success_tic").modal();
+                    // $("#qwe").replaceWith(data); // upd
+                  },
+                  contentType: false,
+                  processData: false,
+                  cache: false,
+                });
+
+                $("#removeImage").click();
+                form.classList.remove('was-validated');
+                form.reset();
+              }
+            }, false);
+
+          });
+
+        }, false);
+
+      })();
+
+      $(document).keydown(function(event) {
+        if (event.keyCode == 27)
+        {
+          // $("#close-modal-login").click();
+          $('.close').click();
+        }
+      });
+
+      function readURL(input)
+      {
+
+        if (input.files && input.files[0]) {
+        var reader = new FileReader();
+
+        reader.onload = function(e) {
+          $('.image-upload-wrap-single-post').hide();
+
+          $('.file-upload-image-single-post').attr('src', e.target.result);
+          $('.file-upload-content-single-post').show();
+
+          $('.image-title-single-post').html(input.files[0].name);
+        };
+
+        reader.readAsDataURL(input.files[0]);
+      } else {
+        removeUpload();
+      }
+    }
+
+    function removeUpload() {
+      $('.file-upload-input-single-post').replaceWith($('.file-upload-input-single-post').clone());
+      $('.file-upload-content-single-post').hide();
+      $('.image-upload-wrap-single-post').show();
+    }
+    $('.image-upload-wrap-single-post').bind('dragover', function() {
+      $('.image-upload-wrap-single-post').addClass('image-dropping-single-post');
+    });
+    $('.image-upload-wrap-single-post').bind('dragleave', function() {
+      $('.image-upload-wrap-single-post').removeClass('image-dropping-single-post');
+    });
+
+
+
+  </script>
+
+</body>
+
+</html>

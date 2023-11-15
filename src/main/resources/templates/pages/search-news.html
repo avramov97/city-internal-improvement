@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:style="http://www.w3.org/1999/xhtml">
+
+
+<head>
+    <title>Неготино</title>
+    <th:block th:replace="fragments/head"></th:block>
+</head>
+
+<body>
+<th:block th:replace="fragments/navbar"></th:block>
+
+<!-- Breadcrumb -->
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-12 col-md-8 col-lg-9">
+            <form method="GET" class="w-100" th:action="@{/news/search}">
+                <div class="input-group">
+                    <input type="text" name="searchTitle" id="search" class="form-control" placeholder="Барај">
+                    <div class="input-group-append">
+                        <button class="btn btn-secondary" type="submit">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+                </div>
+            </form>
+
+            <h5 class="pt-1">Во моментов пребарувате&nbsp;-
+                <span th:text="${searchTitle}" style="color:darkred;font-weight:bold"></span>
+            </h5>
+
+        </div>
+
+    </div>
+</div>
+
+    <div class="news-area mt-4">
+    <div class="container">
+        <div class="row">
+            <div class="col-12 col-md-8 col-lg-9">
+
+                <!-- Single News Area -->
+                <th:block th:if="${foundNews.size() != 0}">
+                    <div class="single-blog-post d-flex flex-wrap style-5 mb-30" th:each="news : ${foundNews}">
+                        <!-- Blog Thumbnail -->
+                        <div class="blog-thumbnail">
+                            <a href="#">
+                                <img th:src=" 'data:image/jpeg;base64,'+ ${imageEncoder.generateBase64Image(news.getImgData(),defaultImageNews)}" alt="No image" />
+                            </a>
+                        </div>
+
+                        <!-- Blog Content -->
+                        <div class="blog-content">
+                            <span th:text="${sdf.format(news.getDate())}" class="post-date mr-15"></span>
+                            <span th:text="${news.getAuthor()}" class="post-date"></span>
+                            <a th:text="${news.getTitle()}" th:href="|/news/single-post/${news.getId()}|" class="post-title"></a>
+                            <p th:text="|${#strings.substring(news.getText(),0,128)}...|" th:if="${news.getText().length() > 128}"></p>
+                            <p th:text="${news.getText()}" th:unless="${news.getText().length() > 128}"></p>
+                        </div>
+                    </div>
+                </th:block>
+                <th:block th:unless="${foundNews.size() != 0}">
+                    <p class="pt-4">Не се пронајдени резултати за
+                        <span th:text="| ${searchTitle}|" style="color:darkred;font-weight:bold"></span>
+                    </p>
+                </th:block>
+            </div>
+            <div class="col-12 col-md-4 col-lg-3">
+
+                <div class="sidebar-area">
+
+                    <a class="add-news" style="text-decoration:none" href="/news/add">
+                        <div class="single-widget-area newsletter-widget mb-30 bg-white border border-dark">
+                            <img src="/Photos/addIcon.png" alt="Logo">
+                            <h4 class="hide-href1 pt-4" style="text-decoration:none;">Додади новост</h4>
+                        </div>
+                    </a>
+
+                    <!-- Latest News Widget -->
+                    <div class="single-widget-area news-widget mb-30" th:if="${approvedNews != null}">
+                        <h4 class="border-bottom border-danger th:if">Последни Новости</h4>
+                        <div class="single-blog-post d-flex style-4 mb-30" th:each="i : ${#numbers.sequence(0,9)}">
+
+                            <!-- Blog Thumbnail -->
+                            <div class="blog-thumbnail">
+                                <a href="#">
+                                    <img class="latest-news" th:src=" 'data:image/jpeg;base64,'+ ${imageEncoder.generateBase64Image(approvedNews.get(i).getImgData(),defaultImageNews)}" alt="No image" />
+                                </a>
+                            </div>
+                            <!-- Blog Content -->
+                            <div class="blog-content">
+                                <span th:text="${sdf.format(approvedNews.get(i).getDate())}" class="post-date"></span>
+                                <a th:text="${approvedNews.get(i).getTitle()}" th:href="|/news/single-post/${approvedNews.get(i).getId()}|" class="post-title" style="font-size: 11px"></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+<!-- Footer -->
+<th:block th:replace="fragments/footer"></th:block>
+
+<script src="js/jquery/jquery-2.2.4.min.js"></script>
+<th:block th:replace="fragments/js"></th:block>
+
+</body>
+
+</html>

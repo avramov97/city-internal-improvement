@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Неготино - Најава</title>
+    <th:block th:replace="fragments/head"></th:block>
+    <link rel="stylesheet" href="/css/login-style.css">
+</head>
+<body>
+
+<th:block th:replace="fragments/navbar"></th:block>
+
+<div class="container mt-2 w-50" th:if="${newRegister==true}">
+    <p class="register register-success text-center">Успешно се регистриравте.<br/>Можете да се најавите со корисничкото име и пасвордот.</p>
+</div>
+
+<div class="container" style="margin-top: 80px;">
+
+    <div class="d-flex justify-content-center h-100">
+
+        <div class="card">
+            <div class="card-header">
+                <h3>Најава</h3>
+                <div class="d-flex justify-content-end social_icon">
+                    <a href="/oauth2/authorization/facebook"><span><i class="fab fa-facebook-square"></i></span></a>
+                    <a href="/oauth2/authorization/google"><span><i class="fab fa-google-plus-square"></i></span></a>
+                    <span><i class="fab fa-twitter-square"></i></span>
+                </div>
+            </div>
+            <div class="card-body">
+                <form method="POST" th:action="@{/login}" th:object="${user}" class="needs-validation" novalidate>
+                    <div class="input-group form-group">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text"><i class="fas fa-user"></i></span>
+                        </div>
+                        <input type="text" class="form-control" th:field="*{username}"  placeholder="Корисничко име" required>
+                    </div>
+                    <div class="input-group form-group">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text"><i class="fas fa-key"></i></span>
+                        </div>
+                        <input type="password" class="form-control" th:field="*{password}"  placeholder="Пасворд" required>
+                    </div>
+                    <div class="row align-items-center remember">
+                        <input id="rememberMe" name="rememberMe" type="checkbox">
+                        <label class="lblRemember" for="rememberMe"> Запомни ме </label>
+                    </div>
+                    <div class="csrf">
+                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                    </div>
+                    <div class="form-group">
+                        <input type="submit" value="Најави се" class="btn float-right login_btn">
+                    </div>
+<!--                    <div class="row align-items-center label">-->
+<!--                        <p id="error" th:text="${error}" class="label m-0"></p>-->
+<!--                    </div>-->
+                    <div class="error mb-5" style="color: red;" th:if="${param.error}"
+                         th:with="errorMsg=${session['SPRING_SECURITY_LAST_EXCEPTION'].message}">
+                        <span th:if="${errorMsg=='Bad credentials'}">Грешно име или пасворд</span>
+                    </div>
+                </form>
+            </div>
+            <div class="card-footer">
+                <div class="d-flex justify-content-center links">
+                    Немаш акаунт?<a href="/register">Регистрирај се</a>
+                </div>
+                <div class="d-flex justify-content-center">
+                    <a href="#">Го заборави пасвордот?</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- Footer -->
+<footer class="py-2 bg-dark" style="margin-top: 105px;">
+    <div class="container">
+        <p class="m-0 text-center text-white">Avramov &copy; Your Website 2020</p>
+    </div>
+    <!-- /.container -->
+</footer>
+
+<!--  Java Script files-->
+<th:block th:replace="fragments/js"></th:block>
+
+<script>
+    // Example starter JavaScript for disabling form submissions if there are invalid fields
+    (function() {
+        'use strict';
+        window.addEventListener('load', function() {
+            // Fetch all the forms we want to apply custom Bootstrap validation styles to
+            var forms = document.getElementsByClassName('needs-validation');
+            // Loop over them and prevent submission
+            var validation = Array.prototype.filter.call(forms, function(form) {
+                form.addEventListener('submit', function(event) {
+                    if (form.checkValidity() === false) {
+                        event.preventDefault();
+                        event.stopPropagation();
+                    }
+                    form.classList.add('was-validated');
+                }, false);
+            });
+        }, false);
+    })();
+</script>
+
+</body>
+</html>

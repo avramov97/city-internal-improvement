@@ -1,0 +1,25 @@
+<th:block th:fragment="navbar">
+        <th:block th:if="${#authorization.expression('isAnonymous()')}">
+            <th:block th:replace="fragments/navbar-guest"></th:block>
+        </th:block>
+        <th:block sec:authorize="isAuthenticated()" th:unless="${#authorization.expression('isAnonymous()')}">
+            <th:block th:switch="${#authorization.expression('isAuthenticated()') }">
+                <!--                ROOT-ADMIN          -->
+                <th:block th:case="${#authorization.expression('hasAuthority(''ROOT-ADMIN'')')}">
+                    <th:block th:replace="fragments/navbar-root-admin"></th:block>
+                </th:block>
+                <!--                ADMIN          -->
+                <th:block th:case="${#authorization.expression('hasAuthority(''ADMIN'')')}">
+                    <th:block th:replace="fragments/navbar-admin"></th:block>
+                </th:block>
+                <!--                MODERATOR         -->
+                <th:block th:case="${#authorization.expression('hasAuthority(''MODERATOR'')')}">
+                    <th:block th:replace="fragments/navbar-moderator"></th:block>
+                </th:block>
+                <!--                USER          -->
+                <th:block th:case="${#authorization.expression('hasAuthority(''ROLE_USER'')')}">
+                    <th:block th:replace="fragments/navbar-user"></th:block>
+                 </th:block>
+            </th:block>
+        </th:block>
+</th:block>

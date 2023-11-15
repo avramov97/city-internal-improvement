@@ -1,0 +1,740 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+  <title>Неготино - Почетна</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  <th:block th:replace="fragments/head"></th:block>
+  <script src="/js/jquery/jquery-2.2.4.min.js"></script>
+  <th:block th:replace="fragments/tempus"></th:block>
+  <link href="/css/owl.carousel.min.css" rel="stylesheet">
+</head>
+
+<body>
+  <th:block th:replace="fragments/navbar"></th:block>
+
+  <div class="container" th:if="${approvedDonations != null and approvedDonations.size() != 0}">
+    <div class="row">
+      <div class="col-12">
+        <section class="breaking-news-area rounded mt-2">
+
+          <!-- Breaking News Widget -->
+          <div class="breaking-news-ticker d-flex align-items-center">
+
+            <div id="breakingNewsTicker" class="ticker">
+              <ul>
+                <li th:each="donation : ${approvedDonations}">
+                  <a th:href="|/donations/single-donation/${donation.getId()}|" th:text="${donation.getTitle()}"></a>
+                  <!--       dodaj th:href="|/news/single-post/${news.getId()}|" za donacii-->
+                </li>
+              </ul>
+
+            </div>
+            <div class="float-right">
+              <form th:action="@{/donations}">
+              <button class="btn btn-danger" type="submit"><b>Хуманост</b></button>
+
+              </form>
+<!--              <h6 class="text-white bg-danger p-1"><b>Хуманост</b></h6>-->
+            </div>
+
+          </div>
+        </section>
+      </div>
+    </div>
+  </div>
+
+  <!--  Main news-->
+  <div class="container mt-3" th:if="${approvedNews != null and approvedNews.size() != 0}">
+    <div class="row">
+      <div class="col-6 mb-4">
+        <div class="single-blog-post style-1" data-animation="fadeInUpBig" data-delay="100ms" data-duration="1000ms">
+            <div id="carouselExampleIndicators" class="carousel slide" data-ride="carousel" data-animation="fadeInUpBig">
+              <div class="carousel-inner" style="height: 453px;" th:if="${approvedNews != null}">
+                <div class="carousel-item" th:each="news,iter : ${approvedNews}" style="height: 453px;" th:classappend="${iter.index == 0 ? 'active' : ''}">
+                  <div class="blog-thumbnail bg-overlay">
+                    <img  class="home-news-left" alt="No image" th:src=" 'data:image/jpeg;base64,'+ ${imageEncoder.generateBase64Image(news.getImgData(),defaultImageNews)}"/>
+                  </div>
+                  <!-- Blog Content -->
+                  <div class="blog-content">
+                    <div class="blog-content-hovered">
+                      <div class="container">
+                        <a th:text="${news.getTitle()}" th:href="|/news/single-post/${news.getId()}|" class="post-title" style="font-size:20px"></a>
+                        <div class="d-flex align-items-center mt-2">
+                        <span th:text="${sdf.format(news.getDate())}" class="post-date mr-15"></span>
+                        <span th:text="${news.getAuthor()}" class="post-date"></span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+              </div>
+
+                <a class="carousel-control-prev" href="#carouselExampleIndicators" role="button" data-slide="prev">
+                  <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                  <span class="sr-only">Previous</span>
+                </a>
+                <a class="carousel-control-next" href="#carouselExampleIndicators" role="button" data-slide="next">
+                  <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                  <span class="sr-only">Next</span>
+                </a>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-6" th:if="${top10ApprovedGoodThings != null and top10ApprovedGoodThings.size() != 0}">
+        <div class="row h-50">
+          <div class="col-6">
+            <div class="single-blog-post style-1" data-animation="fadeInUpBig" data-delay="100ms" data-duration="1000ms">
+              <div class="blog-thumbnail bg-overlay">
+                <img class="home-news-right-up" alt="No image" th:src=" 'data:image/jpeg;base64,'+ ${imageEncoder.generateBase64Image(top10ApprovedGoodThings.get(0).getImgData(),defaultImageGoodThing)}" />
+              </div>
+              <!-- Blog Content -->
+              <div class="blog-content">
+                <div class="blog-content-hovered">
+                  <div class="container">
+                    <a th:text="${top10ApprovedGoodThings.get(0).getTitle()}" th:href="|/good-things/single-good-thing/${top10ApprovedGoodThings.get(0).getId()}|" class="post-title" style="font-size:14px; font-weight: 530"></a>
+                    <span th:text="${top10ApprovedGoodThings.get(0).getAuthor()}" class="post-date mt-2"></span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-6" th:if="${approvedTalents != null and approvedTalents.size() != 0}">
+            <div class="single-blog-post style-1" data-animation="fadeInUpBig" data-delay="100ms" data-duration="1000ms">
+              <div class="blog-thumbnail bg-overlay">
+                <img class="home-news-right-up" alt="No image" th:src=" 'data:image/jpeg;base64,'+ ${imageEncoder.generateBase64Image(approvedTalents.get(0).getImgData(),defaultImageGoodThing)}" />
+              </div>
+              <!-- Blog Content -->
+              <div class="blog-content">
+                <div class="blog-content-hovered">
+                  <div class="container">
+                    <a th:text="${approvedTalents.get(0).getTitle()}" th:href="|/talents/single-talent/${approvedTalents.get(0).getId()}|" class="post-title" style="font-size:14px; font-weight: 530"></a>
+<!--                    <span class="title text-white" th:text="|${approvedTalents.get(0).getFirstName()}  ${approvedTalents.get(0).getLastName()}|"></span>-->
+<!--                    <span th:text="${sdf.format(approvedGoodThings.get(0).getDate())}" class="post-date mr-15"></span>-->
+                    <span th:text="|${approvedTalents.get(0).getFirstName()}  ${approvedTalents.get(0).getLastName()}|" class="post-date mt-2"></span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="row h-50" th:if="${top6ApprovedEvents != null and top6ApprovedEvents.size() != 0}">
+          <div class="col-12">
+            <div class="single-blog-post style-1" data-animation="fadeInUpBig" data-delay="100ms" data-duration="1000ms">
+              <div class="blog-thumbnail bg-overlay">
+                <img class="home-news-right-down" th:src=" 'data:image/jpeg;base64,'+ ${imageEncoder.generateBase64Image(top6ApprovedEvents.get(1).getImgData(),defaultImageEvent)}" alt="" />
+              </div>
+              <!-- Blog Content -->
+              <div class="blog-content">
+                <div class="blog-content-hovered">
+                  <div class="container">
+                    <a th:text="${top6ApprovedEvents.get(1).getTitle()}" th:href="|/events/single-event/${top6ApprovedEvents.get(1).getId()}|" class="post-title" style="font-size:16px; font-weight: 550"></a>
+                    <div class="d-flex align-items-center mt-2">
+                      <span th:text="${sdfEvents.format(top6ApprovedEvents.get(1).getDate())}"  class="post-date mr-15"></span>
+                      <span th:text="${top6ApprovedEvents.get(1).getOrganizer()}" class="post-date"></span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!--  Corona-->
+  <div class="container mt-2 border border-light" th:if="${mkd != null and global != null and countries != null}">
+    <div class="row bg-danger" style="height: 50px"><h4 class="text-white my-auto pl-4"><b>#Корона</b></h4></div>
+    <div class="row mt-4" style="height: 483px";>
+      <div class="col-6">
+        <h6><b>МАКЕДОНИЈА</b></h6>
+        <div class="row">
+          <div class="col-4">
+            <div class="jumbotron" style="height: 200px;">
+              <h6 class="text-center">Потврдени</h6>
+              <p class="display-4 text-center my-3" th:text="${mkd.TotalConfirmed}">322</p>
+              <p class="text-center text-danger" style="font-size: 1.5rem;" th:text="|+${mkd.NewConfirmed}|"></p>
+            </div>
+          </div>
+          <div class="col-4">
+            <div class="jumbotron" style="height: 200px;">
+              <h6 class="text-center">Починати</h6>
+                <p class="display-4 text-center my-3" th:text="${mkd.TotalDeaths}"></p>
+                <p class="text-center text-danger" style="font-size: 1.5rem;" th:text="|+${mkd.NewDeaths}|"></p>
+            </div>
+          </div>
+          <div class="col-4">
+            <div class="jumbotron" style="height: 200px;">
+              <h6 class="text-center">Излечени</h6>
+                <p class="display-4 text-center my-3" th:text="${mkd.TotalRecovered}">322</p>
+                <p class="text-center text-danger" style="font-size: 1.5rem;" th:text="|+${mkd.NewRecovered}|"></p>
+            </div>
+          </div>
+        </div>
+        <h6><b>СВЕТ</b></h6>
+        <div class="row">
+          <div class="col-4">
+            <div class="jumbotron" style="height: 200px;">
+              <h6 class="text-center">Потврдени</h6>
+                <p class="display-4 text-center my-3" th:text="${global.TotalConfirmed}"></p>
+                <p class="text-center text-danger" style="font-size: 1.5rem;" th:text="|+${global.NewConfirmed}|"></p>
+            </div>
+          </div>
+          <div class="col-4">
+            <div class="jumbotron" style="height: 200px;">
+              <h6 class="text-center">Починати</h6>
+                <p class="display-4 text-center my-3" th:text="${global.TotalDeaths}"></p>
+                <p class="text-center text-danger" style="font-size: 1.5rem;" th:text="|+${global.NewDeaths}|"></p>
+            </div>
+          </div>
+          <div class="col-4">
+            <div class="jumbotron" style="height: 200px;">
+              <h6 class="text-center">Излечени</h6>
+                <p class="display-4 text-center my-3" th:text="${global.TotalRecovered}">322</p>
+                <p class="text-center text-danger" style="font-size: 1.5rem;" th:text="|+${global.NewRecovered}|"></p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-6">
+        <div class="fixed-corona-table">
+          <table class="table">
+            <thead style="background-color: #e9ecef;">
+            <tr>
+              <th class="border-0 text-uppercase"><h6 style="font-size: 0.8rem;"><b>Земја</b></h6></th>
+              <th class="border-0 text-uppercase"><h6 style="font-size: 0.8rem;"><b>Потврдени</b></h6></th>
+              <th class="border-0 text-uppercase"><h6 style="font-size: 0.8rem;"><b>Нови Потврдени</b></h6></th>
+              <th class="border-0 text-uppercase"><h6 style="font-size: 0.8rem;"><b>Починати</b></h6></th>
+              <th class="border-0 text-uppercase"><h6 style="font-size: 0.8rem;"><b>Нови починати</b></h6></th>
+              <th class="border-0 text-uppercase"><h6 style="font-size: 0.8rem;"><b>Излечени</b></h6></th>
+              <th class="border-0 text-uppercase"><h6 style="font-size: 0.8rem;"><b>Нови излечени</b></h6></th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="country : ${countries}">
+<!--              <td th:if="${country.Country.length() >= 10}" th:text="${country.CountryCode}" ></td>-->
+<!--              <td th:unless="${country.Country.length() >= 10}" th:text="${country.Country}"></td>-->
+              <th:block th:switch="${country.CountryCode}">
+               <td th:case="'US'">USA</td>
+               <td th:case="'RU'">Russia</td>
+               <td th:case="'GB'">UK</td>
+               <td th:case="*" th:text="${country.Country}"></td>
+              </th:block>
+              <td th:text="${country.TotalConfirmed}"></td>
+              <td class="text-danger" th:text="|+${country.NewConfirmed}|"></td>
+              <td th:text="${country.TotalDeaths}"></td>
+              <td class="text-danger" th:text="|+${country.NewDeaths}|"></td>
+              <td th:text="${country.TotalRecovered}"></td>
+              <td class="text-danger" th:text="|+${country.NewRecovered}|"></td>
+            </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    <div class="row bg-danger mt-4" style="height: 30px">
+      <div class="col-8"></div>
+      <div class="col-4">
+        <p class="text-white text-right"><b>Новости поврзани со вирусот&nbsp&nbsp<i class="fa fa-chevron-right"></i></b></p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Top 3 Authors-->
+  <div class="categories-shop mt-4">
+    <th:block th:if="${topThreeAuthors != null and topThreeAuthors.size() != 0}">
+      <div class="container">
+      <section class="text-center testimonials">
+
+          <h2 class="mb-5 text-white">Топ 3 лица кои направиле добри дела овој месец</h2>
+          <div class="row" style="padding-top: 120px;">
+            <div class="col-lg-4 single-blog-post style-2" th:each="instance,iter : ${topThreeAuthors}">
+              <div class="testimonial-item mx-auto mb-5 mb-lg-0">
+                <h5 th:text="${instance.key}" class="text-white"></h5>
+                <h3 th:text="${instance.value}" class="p-1 counter text-white"></h3>
+                <p th:text="${instance.value == 1} ? 'добро дело' : 'добри дела'" class="font-weight-light text-white mb-0"> </p>
+                <h4 class="border border-danger" ></h4>
+              </div>
+            </div>
+          </div>
+<!--        <p class="pt-5 post-title"><a href="#">Сподели твое или нечие добро дело</a></p>-->
+        <form th:action="@{/good-things}">
+          <button class="btn btn-danger mt-5" type="submit"><b>Сподели добро дело</b></button>
+        </form>
+        </div>
+      </section>
+    </th:block>
+  </div>
+
+  <!--  Events   -->
+  <div class="container mt-5">
+    <div class="row">
+      <div class="col-7" style="border-top: 2px solid #e4002b; border-bottom: 2px solid #e4002b; ">
+
+        <ul class="list-group list-group-flush">
+          <li class="list-group-item pt-4 pb-0" th:each="event : ${top6ApprovedEvents}">
+            <div class="row">
+              <div class="col-3">
+                <h4 th:text="${sdfEventsDate.format(event.getDate())}"></h4>
+              </div>
+              <div class="col-9">
+<!--                <h5 th:text="${event.getTitle()}"></h5>-->
+                <div class="qw">
+                 <a class="link-style-event" th:text="${event.getTitle()}" th:href="|/events/single-event/${event.getId()}|"></a>
+                </div>
+                <div th:text="${sdfEventsTime.format(event.getDate())}" style="float: left; padding-right: 20px">19:19 </div>
+                <div style="float: left; padding-right: 20px">-</div>
+                <div style="padding-left: 0px; padding-right: 20px; float:left; padding-bottom: 20px;">
+                  <p th:text="${event.getLocation()}"></p>
+                </div>
+              </div>
+            </div>
+          </li>
+        </ul>
+      </div>
+      <div class="col-1"></div>
+
+      <div th:if="${#authorization.expression('isAnonymous()')}" class="col-12 col-sm-9 col-md-6 col-lg-4 my-auto">
+        <div class="sidebar-area">
+          <div class="mb-4">
+          <p class="bg-danger rounded text-white text-center"><b>Секој да има право да сподели објава во разните секции</b></p>
+          </div>
+          <a class="add-news" style="text-decoration:none" href="#login_modal" data-toggle="modal">
+            <div class="single-widget-area newsletter-widget mb-30 bg-white border border-dark single-blog-post style-2">
+              <img src="Photos/addIcon.png" alt="Logo">
+              <h4 class="hide-href1 pt-4" style="text-decoration:none;">Додади Настан</h4>
+            </div>
+          </a>
+          <div class="mt-4">
+          <p class="bg-danger rounded text-white text-center"><b>Вие сте наш приоритет, развој на градот наша цел</b></p>
+          </div>
+        </div>
+      </div>
+
+      <div sec:authorize="isAuthenticated()" th:unless="${#authorization.expression('isAnonymous()')}" class="col-4 border border-darkgray rounded-lg">
+        <div class="dwdwr">
+          <h3 class="mt-1">
+            <center>Додади настан</center>
+          </h3>
+          <form class="needs-validation mt-4" th:method="POST" th:action="@{/}" th:object="${event}" enctype="multipart/form-data" novalidate>
+            <div class="form-row">
+              <div class="col-md-12 mb-3">
+<!--                <label for="validationCustom01">Име</label>-->
+                <div class="input-group">
+                  <input th:field="*{title}" type="text" class="form-control" id="validationCustom01" autocomplete="off" placeholder="Име на настанот" required>
+                  <div class="input-group-append">
+                    <div class="input-group-text"><i class="fas fa-hand-holding-heart"></i></div>
+                  </div>
+                  <div class="invalid-feedback">
+                    Воведи име
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="col-md-12 mb-3">
+<!--                <label id="idTimePicker" for="datetimepicker2">Време</label>-->
+                <div class="input-group date" data-target-input="nearest">
+                  <input th:field="*{date}" type="text" id="datetimepicker2" data-toggle="datetimepicker" class="form-control datetimepicker-input" data-target="#datetimepicker2" placeholder="Датум и време на настанот" autocomplete="off" required/>
+<!--                  <input type="text" class="form-control datetimepicker-input" data-target="#datetimepicker2" autocomplete="off" placeholder="Датум и време на настанот" required />-->
+                  <div class="input-group-append">
+                    <div class="input-group-text"><i class="fa fa-calendar-alt"></i></div>
+                  </div>
+                  <div class="invalid-feedback">
+                    Воведи време
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="col-md-12 mb-3">
+<!--                <label for="validationCustom03">Место</label>-->
+                <div class="input-group">
+                  <input th:field="*{location}" type="text" class="form-control" id="validationCustom03" placeholder="Место на настанот" autocomplete="off" required>
+                  <div class="input-group-append">
+                    <div class="input-group-text"><i class="fas fa-location-arrow"></i></div>
+                  </div>
+                  <div class="invalid-feedback">
+                    Воведи место
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="col-md-12 mb-3">
+<!--                <label for="organizer">Организатор</label>-->
+                <div class="input-group">
+                  <input th:field="*{organizer}" type="text" class="form-control" id="organizer" placeholder="Организатор на настанот" autocomplete="off" required>
+                  <div class="input-group-append">
+                    <div class="input-group-text"><i class="fas fa-signature"></i></div>
+                  </div>
+                  <div class="invalid-feedback">
+                    Воведи организатор
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="col-md-12 mb-3">
+                <div class="input-group">
+                  <input type="text" th:field="*{contact}" class="form-control" id="contact" placeholder="Контакт број" autocomplete="off" required>
+                  <div class="input-group-append">
+                    <div class="input-group-text"><i class="fas fa-phone"></i></div>
+                  </div>
+                  <div class="invalid-feedback">
+                    Воведи број
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="col-md-12 mb-3">
+<!--                <label for="validationCustom04">Опис</label>-->
+                <div class="input-group">
+                  <textarea th:field="*{text}"  rows="3" class="form-control" id="validationCustom04" autocomplete="off" placeholder="Опиши го настанот"></textarea>
+                  <div class="input-group-append">
+                    <div class="input-group-text"><i class="fas fa-edit"></i></div>
+                  </div>
+                  <div class="invalid-feedback">
+                    Опиши го настанот
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="form-row blog-thumbnail">
+              <div class="image-upload-wrap-events">
+                <input class="file-upload-input-events" type='file' name="files" onchange="readURL(this);" accept="image/*" />
+                <div class="drag-text-events">
+                  <h3>Додади насловна фотографија</h3>
+                </div>
+              </div>
+              <div class="file-upload-content-events">
+                <img class="file-upload-image-events" alt="your image" />
+                <div class="image-title-wrap-events mt-2">
+                  <button type="button" id="removeImage" onclick="removeUpload()" class="remove-image-events">Избриши</button>
+                </div>
+              </div>
+            </div>
+              <button class="btn btn-dark float-right mt-2 mb-1" type="submit">Сподели</button>
+          </form>
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Good Things & Donations-->
+  <section class="intro-news-area section-padding-100-0 mb-70">
+      <div class="container">
+        <div class="row justify-content-center">
+
+            <div class="col-12 col-sm-9 col-md-6 col-lg-4">
+                <div class="sidebar-area">
+
+                    <a class="add-news" style="text-decoration:none" href="/good-things">
+                        <div class="single-widget-area newsletter-widget mb-30 bg-danger border border-danger single-blog-post style-2">
+                            <h2 class="counter text-white" th:text="${top10ApprovedGoodThings.size()}"> </h2>
+                            <h4 class="hide-href1 text-white pt-4" style="text-decoration:none;">Споделени Добри Дела</h4>
+                        </div>
+                    </a>
+                  <a class="add-news" style="text-decoration:none" href="/donations">
+                        <div class="single-widget-area newsletter-widget mb-30 border border-danger bg-danger single-blog-post style-2">
+                            <h2 class="counter text-white" th:text="${approvedDonations.size()}"> </h2>
+                            <h4 class="hide-href1 pt-4 text-white" style="text-decoration:none;">Споделени Донации</h4>
+                        </div>
+                    </a>
+                </div>
+            </div>
+
+          <!-- Intro News Tabs Area -->
+          <div class="col-12 col-lg-8">
+            <div class="intro-news-tab">
+
+              <!-- Intro News Filter -->
+              <div class="intro-news-filter d-flex justify-content-between">
+                <h6>За добро да е</h6>
+<!--                <h6>Последни објави</h6>-->
+                <nav>
+                  <div class="nav nav-tabs" id="nav-tab" role="tablist">
+                    <a class="nav-item nav-link active" id="nav1" data-toggle="tab" href="#nav-1" role="tab" aria-controls="nav-1" aria-selected="true">Добри Дела</a>
+                    <a class="nav-item nav-link" id="nav2" data-toggle="tab" href="#nav-2" role="tab" aria-controls="nav-2" aria-selected="false">Донации</a>
+                  </div>
+                </nav>
+              </div>
+
+              <div class="tab-content" id="nav-tabContent">
+                <div class="tab-pane fade show active" id="nav-1" role="tabpanel" aria-labelledby="nav1">
+                  <div class="row">
+                    <div class="col-12 col-sm-6" th:each="goodThing : ${top10ApprovedGoodThings}">
+                      <div class="single-blog-post d-flex style-4 mb-30">
+                        <!-- Blog Thumbnail -->
+                        <div class="blog-thumbnail">
+                          <a href="#">
+                            <img th:src=" 'data:image/jpeg;base64,'+ ${imageEncoder.generateBase64Image(goodThing.getImgData(),defaultImageGoodThing)}" alt="">
+                          </a>
+                        </div>
+
+                        <!-- Blog Content -->
+                        <div class="blog-content">
+                          <span th:text="${goodThing.getAuthor()}" class="post-date"></span>
+                          <a th:text="${goodThing.getTitle()}" href="#" class="post-title"></a>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="tab-pane fade show" id="nav-2" role="tabpanel" aria-labelledby="nav2">
+                  <div class="row">
+                    <div class="col-12 col-sm-6" th:each="donation : ${approvedDonations.subList(0, 10 > approvedDonations.size() ? approvedDonations.size() : 10)}">
+                      <div class="single-blog-post d-flex style-4 mb-30">
+                        <!-- Blog Thumbnail -->
+                        <div class="blog-thumbnail">
+                          <a href="#">
+                            <img th:src=" 'data:image/jpeg;base64,'+ ${imageEncoder.generateBase64Image(donation.getImgData(),defaultImageDonation)}" alt="">
+                          </a>
+                        </div>
+
+                        <!-- Blog Content -->
+                        <div class="blog-content">
+                          <span th:text="${donation.getContact()}" class="post-date"></span>
+                          <a th:text="${donation.getTitle()}" href="#" class="post-title"></a>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+          </div>
+
+          <!-- Right Side - Last Posts -->
+
+        </div>
+      </div>
+    </section>
+
+  <!-- Talents - Support -->
+  <!--  <div class="container"> or without container ??-->
+  <section class="video-area bg-img bg-overlay bg-fixed" style="background-image: url(/Photos/Negotino/cvaj.jpeg);">
+    <div class="container">
+      <div class="row">
+        <!-- Featured Video Area -->
+        <div class="col-12">
+          <div class="featured-video-area d-flex align-items-center justify-content-center">
+            <div class="text-center">
+              <form th:action="@{/talents}">
+                <button class="btn btn-danger mt-5" type="submit"><h3 class="text-white"><b>Поткрепа на Талентите во Неготино</b></h3></button>
+              </form>
+<!--          or?   <h3 class="video-title border-bottom border-danger">Покрепа на Талентите во Неготино</h3>-->
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="video-slideshow py-5">
+      <div class="container">
+        <div class="row">
+          <div class="col-12">
+            <!-- Talents Slides -->
+            <div class="video-slides owl-carousel">
+
+              <div class="single-blog-post style-3" th:each="talent : ${approvedTalents}">
+                <!-- Blog Thumbnail -->
+                <div class="blog-thumbnail">
+                  <a href="/talents/">
+                    <img th:src=" 'data:image/jpeg;base64,'+ ${imageEncoder.generateBase64Image(talent.getImgData(),defaultImageTalent)}" style="width 350px; height: 239px" alt="No image">
+<!--                    <img th:src=" 'data:image/jpeg;base64,'+ ${imageEncoder.generateBase64Image(goodThing.getImgData(),defaultImageGoodThing)}"  class="home-news-left" alt="Responsive image">-->
+                  </a>
+                </div>
+
+                <!-- Blog Content -->
+                <div class="blog-content">
+                  <span th:text="${talent.getOccupation()}" class="post-date"></span>
+                  <a href="/talents/" th:text="${talent.getTitle()}" class="post-title"> </a>
+                  <a th:text="|${talent.getFirstName()}  ${talent.getLastName()}|" href="/talents" class="post-author"></a>
+                </div>
+              </div>
+            </div>
+            </div>
+          </div>
+        </div>
+      </div>
+<!--    </div>-->
+  </section>
+
+    <!-- ##### Top 5 News ##### -->
+    <div class="top-news-area section-padding-100">
+      <div class="container">
+        <div class="row">
+
+          <div class="col-12 col-sm-6 col-lg-4" th:each="news : ${approvedNews.subList(0, 5 > approvedNews.size() ? approvedNews.size() : 5)}">
+            <div class="single-blog-post style-2 mb-5">
+              <!-- Blog Thumbnail -->
+              <div class="blog-thumbnail">
+                <a href="#">
+                  <img th:src=" 'data:image/jpeg;base64,'+ ${imageEncoder.generateBase64Image(news.getImgData(),defaultImageNews)}" style="width: 340px; height: 232px" alt="">
+                </a>
+              </div>
+
+              <!-- Blog Content -->
+              <div class="blog-content">
+                <a th:text="${news.getTitle()}" href="#" class="post-title"></a>
+                <a th:text="${news.getAuthor()}" href="#" class="post-author"></a>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-12 col-sm-6 col-lg-4">
+
+              <a class="add-news" style="text-decoration:none" href="/news/add">
+                <div class="single-widget-area newsletter-widget mb-30 bg-white border border-dark single-blog-post style-2">
+                  <img src="Photos/addIcon.png" alt="Logo">
+                  <h4 class="hide-href1 pt-4" style="text-decoration:none;">Додади новост</h4>
+                </div>
+              </a>
+          
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+
+  <!-- Modals -->
+  <th:block th:replace="fragments/modal-login"></th:block>
+  <th:block th:replace="fragments/modal"></th:block>
+
+  <th:block th:replace="fragments/footer"></th:block>
+
+  <th:block th:replace="fragments/js"></th:block>
+
+  <script>
+
+      // window.sr = ScrollReveal();
+      // sr.reveal('.testimonials',{duration:1000});
+      // sr.reveal('.showcase',{duration:1000});
+      // sr.reveal('.container',{duration:1000});
+      // sr.reveal('.container-fluid',{duration:1000});
+      // sr.reveal('.row',{duration:1000});
+
+      (function() {
+        'use strict';
+        window.addEventListener('load', function() {
+          // Fetch all the forms we want to apply custom Bootstrap validation styles to
+          var forms = document.getElementsByClassName('needs-validation');
+          // Loop over them and prevent submission
+          var validation = Array.prototype.filter.call(forms, function(form) {
+            form.addEventListener('submit', function(event) {
+              if (form.checkValidity() === false) {
+                form.classList.add('was-validated');
+                event.preventDefault();
+                event.stopPropagation();
+              }
+              else
+              {
+                event.preventDefault();
+                event.stopPropagation();
+
+                var formData = new FormData($('.needs-validation')[0]);
+                // var formData = new FormData("this");
+
+                $.ajax({
+                  url: "/events/add-from-home",
+                  method: "POST",
+                  data: formData,
+                  success: function ()
+                  {
+                      jQuery.noConflict();
+                      $('#success_tic').modal('show');
+                  },
+                  contentType: false,
+                  processData: false,
+                  cache: false,
+                });
+
+                $("#removeImage").click();
+                form.classList.remove('was-validated');
+                form.reset();
+
+
+              }
+            }, false);
+
+          });
+
+        }, false);
+
+      })();
+
+      $(document).keydown(function(event) {
+        if (event.keyCode == 27)
+        {
+          // $("#close-modal-login").click();
+          $('.close').click();
+        }
+      });
+
+      $(function () {
+        $('#datetimepicker2').datetimepicker({
+          format: 'DD/MM/YYYY HH:mm'
+        });
+      });
+
+      function readURL(input) {
+        if (input.files && input.files[0]) {
+          var reader = new FileReader();
+
+          reader.onload = function(e) {
+            $('.image-upload-wrap-events').hide();
+
+            $('.file-upload-image-events').attr('src', e.target.result);
+            $('.file-upload-content-events').show();
+
+            $('.image-title-events').html(input.files[0].name);
+          };
+
+          reader.readAsDataURL(input.files[0]);
+        } else {
+          removeUpload();
+        }
+      }
+
+      function removeUpload() {
+        $('.file-upload-input-events').replaceWith($('.file-upload-input-events').clone());
+        $('.file-upload-content-events').hide();
+        $('.image-upload-wrap-events').show();
+      }
+      $('.image-upload-wrap-events').bind('dragover', function() {
+        $('.image-upload-wrap-events').addClass('image-dropping-events');
+      });
+      $('.image-upload-wrap-events').bind('dragleave', function() {
+        $('.image-upload-wrap-events').removeClass('image-dropping-events');
+      });
+
+
+      $('#corona').click(function(){
+        //Some code
+
+        var settings = {
+          "url": "https://api.covid19api.com/summary",
+          "method": "GET",
+          "timeout": 0,
+        };
+
+        $.ajax(settings).done(function (response) {
+          console.log(response);
+        });
+
+      });
+
+    </script>
+
+
+
+</body>
+
+</html>

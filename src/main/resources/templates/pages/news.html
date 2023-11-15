@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+  <title>Неготино - Новости</title>
+  <th:block th:replace="fragments/head"></th:block>
+</head>
+
+<body>
+  <th:block th:replace="fragments/navbar"></th:block>
+
+  <!-- Breadcrumb -->
+  <div class="container mt-2">
+    <div class="row">
+      <div class="col-6">
+        <section class="breaking-news-area rounded">
+          <!-- Breaking News Widget -->
+          <div class="breaking-news-ticker d-flex flex-wrap align-items-center">
+            <div id="breakingNewsTicker" class="ticker">
+              <ul>
+                <li th:each="news : ${approvedNews}">
+                    <a th:text="${news.getTitle()}" th:href="|/news/single-post/${news.getId()}|"></a>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+        </section>
+      </div>
+
+
+      <div class="col d-flex justify-content-end">
+        <form method="GET" class="w-100" th:action="@{/news/search}">
+        <div class="input-group">
+          <input type="text" name="searchTitle" id="search" class="form-control" placeholder="Барај">
+          <div class="input-group-append">
+            <button class="btn btn-secondary" type="submit">
+              <i class="fa fa-search"></i>
+            </button>
+          </div>
+        </div>
+        </form>
+      </div>
+
+    </div>
+  </div>
+
+  <!--  Main Part Approved News -->
+  <div class="container mt-3" th:if="${approvedNews != null and approvedNews.size() >= 5}">
+    <div class="row">
+      <div class="col-6 mb-4">
+        <div class="single-blog-post style-1" data-animation="fadeInUpBig" data-delay="100ms" data-duration="1000ms">
+          <div class="blog-thumbnail bg-overlay">
+            <img class="main-news-left" alt="No image" th:src=" 'data:image/jpeg;base64,'+ ${imageEncoder.generateBase64Image(approvedNews.get(0).getImgData(),defaultImageNews)}" />
+          </div>
+          <!-- Blog Content -->
+          <div class="blog-content">
+            <div class="blog-content-hovered">
+              <div class="container">
+                <form sec:authorize="hasAuthority('ADMIN')" method="POST" style="float:right;" th:action="@{/news/discard}" onsubmit="return confirm('Do you really want to delete the news?');">
+                  <input type="hidden" name="newsDiscardId" id="lbl" th:value="${approvedNews.get(0).getId()}" />
+                  <button type="submit" name="discard" id="discard" value="value" class="btn btn-danger">Discard</button>
+                </form>
+                <a th:text="${approvedNews.get(0).getTitle()}" th:href="|/news/single-post/${approvedNews.get(0).getId()}|" class="post-title" style="font-size:20px"></a>
+                <div class="d-flex align-items-center mt-2">
+                  <span th:text="${sdf.format(approvedNews.get(0).getDate())}" class="post-date mr-15"></span>
+                  <span th:text="${approvedNews.get(0).getAuthor()}" class="post-date"></span>
+                </div>
+<!--                <span th:text="|${sdf.format(approvedNews.get(0).getDate())} - ${approvedNews.get(0).getAuthor()}|" class="post-date mt-2"></span>-->
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-6">
+        <div class="row h-50">
+          <div class="col-6">
+            <div class="single-blog-post style-1" data-animation="fadeInUpBig" data-delay="100ms" data-duration="1000ms">
+              <div class="blog-thumbnail bg-overlay">
+                <img class="main-news-right" alt="No image" th:src=" 'data:image/jpeg;base64,'+ ${imageEncoder.generateBase64Image(approvedNews.get(1).getImgData(),defaultImageNews)}" />
+              </div>
+              <div class="blog-content">
+                <div class="blog-content-hovered">
+                  <div class="container">
+                    <form sec:authorize="hasAuthority('ADMIN')" method="POST" style="float:right;" th:action="@{/news/discard}" onsubmit="return confirm('Do you really want to delete the news?');">
+                      <input type="hidden" name="newsDiscardId" id="lbl" th:value="${approvedNews.get(1).getId()}" />
+                      <button type="submit" name="discard" id="discard" value="value" class="btn btn-danger">Discard</button>
+                    </form>
+                    <a th:text="${approvedNews.get(1).getTitle()}" th:href="|/news/single-post/${approvedNews.get(1).getId()}|" class="post-title" style="font-size:14px; font-weight: 530"></a>
+<!--                    <span th:text="${sdf.format(approvedNews.get(1).getDate())}" class="post-date mt-2"></span>-->
+                      <div class="d-flex align-items-center mt-2">
+                          <span th:text="${sdf.format(approvedNews.get(1).getDate())}" class="post-date mr-15"></span>
+                          <span th:text="${approvedNews.get(1).getAuthor()}" class="post-date"></span>
+                      </div>
+<!--                    <span th:text="|${sdf.format(approvedNews.get(1).getDate())} - ${approvedNews.get(1).getAuthor()}|" class="post-date mt-2"></span>-->
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-6">
+            <div class="single-blog-post style-1" data-animation="fadeInUpBig" data-delay="100ms" data-duration="1000ms">
+              <div class="blog-thumbnail bg-overlay">
+                <img class="main-news-right" alt="No image" th:src=" 'data:image/jpeg;base64,'+ ${imageEncoder.generateBase64Image(approvedNews.get(2).getImgData(),defaultImageNews)}"/>
+              </div>
+              <!-- Blog Content -->
+              <div class="blog-content">
+                <div class="blog-content-hovered">
+                  <div class="container">
+                    <form sec:authorize="hasAuthority('ADMIN')" method="POST" style="float:right;" th:action="@{/news/discard}" onsubmit="return confirm('Do you really want to delete the news?');">
+                      <input type="hidden" name="newsDiscardId" id="lbl" th:value="${approvedNews.get(2).getId()}" />
+                      <button type="submit" name="discard" id="discard" value="value" class="btn btn-danger">Discard</button>
+                    </form>
+                    <a th:text="${approvedNews.get(2).getTitle()}" th:href="|/news/single-post/${approvedNews.get(2).getId()}|" class="post-title" style="font-size:14px; font-weight: 530"></a>
+                    <div class="d-flex align-items-center mt-2">
+                          <span th:text="${sdf.format(approvedNews.get(2).getDate())}" class="post-date mr-15"></span>
+                          <span th:text="${approvedNews.get(2).getAuthor()}" class="post-date"></span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="row h-50">
+          <div class="col-6">
+            <div class="single-blog-post style-1" data-animation="fadeInUpBig" data-delay="100ms" data-duration="1000ms">
+              <div class="blog-thumbnail bg-overlay">
+                <img class="main-news-right" alt="No image" th:src=" 'data:image/jpeg;base64,'+ ${imageEncoder.generateBase64Image(approvedNews.get(3).getImgData(),defaultImageNews)}" />
+              </div>
+              <!-- Blog Content -->
+              <div class="blog-content">
+                <div class="blog-content-hovered">
+                  <div class="container">
+                    <form sec:authorize="hasAuthority('ADMIN')" method="POST" style="float:right;" th:action="@{/news/discard}" onsubmit="return confirm('Do you really want to delete the news?');">
+                      <input type="hidden" name="newsDiscardId" id="lbl" th:value="${approvedNews.get(3).getId()}" />
+                      <button type="submit" name="discard" id="discard" value="value" class="btn btn-danger">Discard</button>
+                    </form>
+                    <a th:text="${approvedNews.get(3).getTitle()}" th:href="|/news/single-post/${approvedNews.get(3).getId()}|" class="post-title" style="font-size:14px; font-weight: 530"></a>
+                      <div class="d-flex align-items-center mt-2">
+                          <span th:text="${sdf.format(approvedNews.get(3).getDate())}" class="post-date mr-15"></span>
+                          <span th:text="${approvedNews.get(3).getAuthor()}" class="post-date"></span>
+                      </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-6">
+            <div class="single-blog-post style-1" data-animation="fadeInUpBig" data-delay="100ms" data-duration="1000ms">
+              <div class="blog-thumbnail bg-overlay">
+                <img class="main-news-right" alt="No image" th:src=" 'data:image/jpeg;base64,'+ ${imageEncoder.generateBase64Image(approvedNews.get(4).getImgData(),defaultImageNews)}" />
+              </div>
+              <!-- Blog Content -->
+              <div class="blog-content ">
+                <div class="blog-content-hovered">
+                  <div class="container">
+                    <form sec:authorize="hasAuthority('ADMIN')" method="POST" style="float:right;" th:action="@{/news/discard}" onsubmit="return confirm('Do you really want to delete the news?');">
+                      <input type="hidden" name="newsDiscardId" id="lbl" th:value="${approvedNews.get(4).getId()}" />
+                      <button type="submit" name="discard" id="discard" value="value" class="btn btn-danger">Discard</button>
+                    </form>
+                    <a th:text="${approvedNews.get(4).getTitle()}" th:href="|/news/single-post/${approvedNews.get(4).getId()}|" class="post-title" style="font-size:14px; font-weight: 530"></a>
+                    <div class="d-flex align-items-center mt-2">
+                          <span th:text="${sdf.format(approvedNews.get(4).getDate())}" class="post-date mr-15"></span>
+                          <span th:text="${approvedNews.get(4).getAuthor()}" class="post-date"></span>
+                    </div>
+<!--                    <span th:text="${sdf.format(approvedNews.get(4).getDate())}"class="post-date mt-2"></span>-->
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Second Part Approved News -->
+  <section class="intro-news-area section-padding-100-0 mb-70"  th:if="${approvedNews != null and approvedNews.size() >= 6}">
+    <div class="container">
+      <div class="row justify-content-center">
+        <!-- Intro News Tabs Area -->
+        <div class="col-12 col-lg-8">
+          <div class="intro-news-tab">
+            <!-- Intro News Filter -->
+            <div class="tab-content" id="nav-tabContent">
+              <div class="tab-pane fade show active" id="nav-1" role="tabpanel" aria-labelledby="nav1">
+                <div class="row">
+                  <div class="col-12 col-sm-6" th:each="i : ${#numbers.sequence(5,approvedNews.size()-1)}">
+                    <div class="single-blog-post style-2 mb-5">
+                      <!-- Blog Thumbnail -->
+                      <div class="blog-thumbnail">
+                        <a th:href="|/news/single-post/${approvedNews.get(i).getId()}|">
+                          <img class="second-part-news" th:src=" 'data:image/jpeg;base64,'+ ${imageEncoder.generateBase64Image(approvedNews.get(i).getImgData(),defaultImageNews)}" alt="No image" />
+                        </a>
+                      </div>
+                      <!-- Blog Content -->
+                      <div class="blog-content">
+                        <span th:text="${sdf.format(approvedNews.get(i).getDate())}" class="post-date"></span>
+                        <a th:text="${approvedNews.get(i).getTitle()}" th:href="|/news/single-post/${approvedNews.get(i).getId()}|" class="post-title"></a>
+                        <p class="text-muted float-left mt-1">
+                          <i class="fas fa-user"></i>
+                          <small th:text="${approvedNews.get(i).getAuthor()}"></small>
+                        </p>
+                        <form sec:authorize="hasAuthority('ADMIN')" method="POST" style="float:right;" th:action="@{/news/discard}" onsubmit="return confirm('Do you really want to delete the news?');">
+                          <input type="hidden" name="newsDiscardId" id="lbl" th:value="${approvedNews.get(i).getId()}" />
+                          <button type="submit" name="discard" id="discard" value="value" class="btn btn-danger">Discard</button>
+                        </form>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sidebar Widget -->
+        <div class="col-12 col-sm-9 col-md-6 col-lg-4">
+          <div class="sidebar-area">
+
+            <!-- Newsletter Widget -->
+
+            <a class="add-news" style="text-decoration:none" href="/news/add">
+              <div class="single-widget-area newsletter-widget mb-30 bg-white border border-dark single-blog-post style-2">
+                <img src="Photos/addIcon.png" alt="Logo">
+                <h4 class="hide-href1 pt-4" style="text-decoration:none;">Додади Новост</h4>
+              </div>
+            </a>
+
+              <div class="single-widget-area news-widget mb-30">
+                  <h4 class="border-bottom border-danger">Последни Настани</h4>
+
+                  <!-- Single News Area -->
+                  <th:block  th:each="event : ${top6ApprovedEvents}">
+                    <div class="single-blog-post d-flex style-4 mb-30">
+                      <!-- Blog Thumbnail -->
+                      <div class="blog-thumbnail">
+                        <a th:href="|/events/single-event/${event.getId()}|">
+                          <img th:src=" 'data:image/jpeg;base64,'+ ${imageEncoder.generateBase64Image(event.getImgData(),defaultImageEvent)}" alt="">
+                        </a>
+                      </div>
+
+                      <!-- Blog Content -->
+                      <div class="blog-content">
+                        <span class="post-date" th:text="${event.getDate()}"></span>
+                        <a th:href="|/events/single-event/${event.getId()}|" class="post-title" th:text="${event.getTitle()}"></a>
+                      </div>
+                    </div>
+                  </th:block>
+
+                <h4 class="border-bottom border-danger mt-4">Последни Добри Работи</h4>
+                <th:block  th:each="goodThing : ${top10ApprovedGoodThings}">
+                  <div class="single-blog-post d-flex style-4 mb-30">
+                    <!-- Blog Thumbnail -->
+                    <div class="blog-thumbnail">
+                      <a th:href="|/good-things/single-good-thing/${goodThing.getId()}|">
+                        <img th:src=" 'data:image/jpeg;base64,'+ ${imageEncoder.generateBase64Image(goodThing.getImgData(),defaultImageGoodThing)}" alt="">
+                      </a>
+                    </div>
+                    <!-- Blog Content -->
+                    <div class="blog-content">
+                      <span class="post-date" th:text="${goodThing.getAuthor()}"></span>
+                      <a th:href="|/good-things/single-good-thing/${goodThing.getId()}|" class="post-title" th:text="${goodThing.getTitle()}"></a>
+                    </div>
+                  </div>
+                </th:block>
+
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!--  Requested News  -->
+  <div sec:authorize="hasAuthority('MODERATOR')" class="news-area mt-4">
+
+    <div class="container mb-2 mt-3 border-bottom border-dark">
+      <h3 style="text-align:center">Requested News</h3>
+    </div>
+    <th:block class="p-3" th:if="${requestedNews.size() == 0}">
+      <p style="text-align:center">There are no requested News</p>
+    </th:block>
+    <th:block class="p-3" th:unless="${requestedNews.size() == 0}">
+
+      <div class="container">
+        <div class="row border-bottom border-light" th:each="news,iter : ${requestedNews}" th:classappend="${iter.odd ? '' : ''}">
+          <div class="col-12 col-md-12 col-lg-12">
+
+            <div class="row mt-3">
+              <!-- Single News Area -->
+              <div class="single-blog-post d-flex flex-wrap style-5 col-12 mb-30">
+                <!-- Blog Thumbnail -->
+                <div class="blog-thumbnail">
+                  <a href="#">
+                    <img th:src=" 'data:image/jpeg;base64,'+ ${imageEncoder.generateBase64Image(news.getImgData(),defaultImageNews)}" alt="" />
+                  </a>
+                </div>
+                <!-- Blog Content -->
+                <div class="blog-content">
+                  <span th:text="${sdf.format(news.getDate())}" class="post-date"></span>
+                  <a href="#" class="post-title" th:text="${news.getTitle()}"></a>
+                  <p th:text="${news.getText()}"></p>
+                  <p class="text-muted float-left mt-1">
+                    <i class="fas fa-user"></i>
+                    <small th:text="${news.getAuthor()}"></small>
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <form method="POST" style="float:left;" th:action="@{/news/approve}";>
+              <input type="hidden" id="lbl15" name="newsApproveId" th:value="${news.getId()}" />
+              <button type="submit" name="approve" id="approve-req-news" value="value4" class="btn btn-success">Approve</button>
+            </form>
+            <form method="POST" class="float-right" style="float:right;" th:action="@{/news/discard}" onsubmit="return confirm('Do you really want to discard the news?');">
+              <input type="hidden" name="newsDiscardId" id="lbl16" th:value="${news.getId()}" />
+              <button type="submit" name="discard" id="discard-req-news" value="value" class="btn btn-danger">Discard</button>
+            </form>
+          </div>
+        </div>
+      </div>
+
+      <div class="container mb-2 mt-3 border-top border-dark">
+        <div class="row mt-2">
+          <div class="col-lg-12">
+            <form method="POST" style="float:left;" th:action="@{/news/approve-all}" onsubmit="return confirm('Do you really want to approve all the requested news?');">
+              <input type="hidden" name="news-discard-all" id="lblDiscardAll" />
+              <button type="submit" name="approve-all" id="approve-all" value="value" class="btn btn-outline-success">Approve All</button>
+            </form>
+            <form method="POST" style="float:right;" th:action="@{/news/discard-all}" onsubmit="return confirm('Do you really want to discard all the requested news?');">
+              <input type="hidden" name="news-approve-all" id="lblAproveAll" />
+              <button type="submit" name="approve-all" id="discard-all" value="value" class="btn btn-outline-danger">Discard All</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </th:block>
+
+  </div>
+
+  <!-- Footer -->
+  <th:block th:replace="fragments/footer"></th:block>
+
+
+  <script src="js/jquery/jquery-2.2.4.min.js"></script>
+  <th:block th:replace="fragments/js"></th:block>
+
+</body>
+
+</html>

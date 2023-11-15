@@ -1,0 +1,117 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <title>Неготино - Логови</title>
+    <link rel="icon" href="/img/neg_grb.png">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.20/css/dataTables.bootstrap4.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.20/css/jquery.dataTables.min.css">
+
+</head>
+
+<body>
+<th:block th:replace="fragments/navbar"></th:block>
+
+<div class="container mb-3 mt-3">
+
+<!--    <div class="form-group row">-->
+<!--            <input type="text" name="name" class="form-control col-sm-2" id="make" placeholder="Username..">-->
+<!--            <button type="submit" name="submit" id="button4" value="value" class="btn btn-primary">Search Logs</button>-->
+<!--    </div>-->
+
+    <table id="example" class="display" style="width:100%">
+        <thead>
+        <tr>
+            <th style="display:none;"/>
+            <th>Username</th>
+            <th>Operation</th>
+            <th>Modified table</th>
+            <th>Time</th>
+        </tr>
+        </thead>
+
+        <tbody>
+
+        <tr th:each="log : ${list}">
+            <td style="display:none;" th:text="${log.getId()}">
+            <td class="id" th:text="${log.getUser()}"></td>
+            <td class="name" th:text="${log.getOperation()}"></td>
+            <td class="table-name" th:text="${log.getTableName()}"></td>
+            <td class="date" th:text="${log.getDate()}"></td>
+        </tr>
+        </tbody>
+
+        <tfoot>
+        <tr>
+            <th style="display:none;"/>
+            <th>Username</th>
+            <th>Operation</th>
+            <th>Modified table</th>
+            <th>Time</th>
+        </tr>
+        </tfoot>
+    </table>
+
+    <form sec:authorize="hasAuthority('ROOT-ADMIN')" method="GET" th:action="@{/logs/delete}" class="mt-4" style="float:left;" onsubmit="return confirm('Do you really want to delete the logs?');">
+        <input type="hidden" name="logs" id="lbl" />
+        <button type="submit" name="submit" id="button" value="value" class="btn btn-danger">Clear selected</button>
+    </form>
+    <form sec:authorize="hasAuthority('ROOT-ADMIN')" method="GET" th:action="@{/logs/delete/all}" class="mt-4" style="float:right;">
+        <input type="hidden" name="logs" id="lbl2" />
+        <button type="submit" name=\"submit" id="button2" value="value" class="btn btn-danger">Clear all logs</button>
+    </form>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+
+<!--    <script src="https://code.jquery.com/jquery-3.3.1.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>-->
+<!--    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>-->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/bootstrap-table@1.16.0/dist/bootstrap-table.min.js"></script>
+
+    <script src="https://cdn.datatables.net/1.10.20/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.20/js/dataTables.bootstrap4.min.js"></script>
+
+    <script th:inline="javascript">
+
+        $(document).ready(function()
+        {
+            var table = $('#example').DataTable();
+            var selectedRows = new Array();
+
+            $('#example tbody').on( 'click', 'tr', function ()
+            {
+                $(this).toggleClass('selected');
+            } );
+
+            $('#button').click( function ()
+            {
+                var rows = table.rows('.selected').data();
+
+                for(var i=0;i<rows.length;i++)
+                {
+                    selectedRows[i] = rows[i][0];
+                }
+
+                var elem = document.getElementById("lbl");
+                if(typeof elem == null || elem == 'undefined' )
+                {
+                    alert('error');
+                }
+
+              //  alert(selectedRows);
+                document.getElementById("lbl").value = selectedRows;
+
+            } );
+
+        } );
+
+        /*]]>*/
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+  <title>Неготино - Добри Дела</title>
+  <th:block th:replace="fragments/head"></th:block>
+  <link href="css/landing-page.min.css" rel="stylesheet">
+  <script src="https://unpkg.com/scrollreveal@4.0.0/dist/scrollreveal.min.js"></script>
+</head>
+
+<body>
+<th:block th:replace="fragments/navbar"></th:block>
+
+<!-- Image gallery-->
+<th:block th:if="${approvedGoodThings != null and approvedGoodThings.size() >= 6}">
+  <ul class="gallery_box">
+    <li th:each="i : ${#numbers.sequence(0,5)}"
+        th:style="|background:url(data:image/jpeg;base64,${imageEncoder.generateBase64Image(approvedGoodThings.get(i).getImgData(),defaultImageGoodThing)}); background-size: cover;|"
+        th:styleappend="${i == 4 ? 'position: relative; top: -134px;' : ''}">
+
+      <a th:href="|/good-things/single-good-thing/${approvedGoodThings.get(i).getId()}|">
+<!--        <img th:src="'data:image/jpeg;base64,'+ ${imageEncoder.generateBase64Image(approvedGoodThings.get(4).getImgData(),defaultImageGoodThing)}">-->
+        <div class="box_data">
+          <span th:text="${approvedGoodThings.get(i).getTitle()}"></span>
+        </div>
+      </a>
+    </li>
+  </ul>
+</th:block>
+
+<!-- Top 3 authors -->
+<th:block th:if="${topThreeAuthors != null}">
+<section class="text-center testimonials bg-light">
+  <div class="container">
+    <h2 class="mb-5">Топ 3 лица кои направиле добри дела овој месец</h2>
+    <div class="row">
+      <div class="col-lg-4" th:each="instance,iter : ${topThreeAuthors}">
+        <div class="testimonial-item mx-auto mb-5 mb-lg-0">
+          <th:block th:switch="${iter.index}">
+<!--            <i th:case="0" class="fas fa-award"></i>-->
+            <img th:case="0" class="img-fluid mb-3" src="Photos/good-things/crowns/1st.png" alt="">
+            <img th:case="1" class="img-fluid mb-4" src="Photos/good-things/crowns/4.png" alt="">
+            <img th:case="2" class="img-fluid mb-3" src="Photos/good-things/crowns/2nd.png" alt="">
+          </th:block>
+          <h5 th:text="${instance.key}"></h5>
+          <h3 th:text="${instance.value}" class="p-1 counter">10</h3>
+          <p th:text="${instance.value == 1} ? 'добро дело' : 'добри дела'" class="font-weight-light mb-0"> </p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+</th:block>
+
+<!-- Approved Good Things -->
+<section class="showcase">
+  <div class="container-fluid p-0">
+    <div class="row no-gutters" th:each="goodThing,iter : ${approvedGoodThings}">
+      <div class="col-lg-6 text-white showcase-img" th:style="|background:url(data:image/jpeg;base64,${imageEncoder.generateBase64Image(goodThing.getImgData(),defaultImageGoodThing)}); background-size: cover;|" th:classappend="${iter.odd ? 'order-lg-2' : ''}" >
+      </div>
+      <div class="col-lg-6 my-auto showcase-text" th:classappend="${iter.odd ? 'order-lg-1' : ''}" >
+<!--        <h2 th:text="${goodThing.getTitle()}"></h2>-->
+        <a class="link-style-good-thing" th:text="${goodThing.getTitle()}" th:href="|/good-things/single-good-thing/${goodThing.getId()}|"></a>
+        <p class="pt-3" th:text="|${#strings.substring(goodThing.getText(),0,350)}...|" th:if="${goodThing.getText().length() > 350}"></p>
+        <p class="pt-3" th:text="${goodThing.getText()}" th:unless="${goodThing.getText().length() > 350}"></p>
+        <form class="mt-3" sec:authorize="hasAuthority('ADMIN')" method="POST" style="float:right;" th:action="@{/good-things/discard}" onsubmit="return confirm('Do you really want to delete the good thing?');">
+          <input type="hidden" name="goodThingDiscardId" id="lbl" th:value="${goodThing.getId()}" />
+          <button type="submit" name="discard" id="discard" value="value" class="btn btn-danger">Discard</button>
+        </form>
+        <!--    h4 or h5-->
+        <h4 class="text-muted pt-3">
+          <i class="fas fa-crown"></i>
+          <small th:text="${goodThing.getAuthor()}">
+          </small>
+        </h4>
+
+      </div>
+    </div>
+
+    <form sec:authorize="hasAuthority('ROLE_USER')" class="needs-validation" th:method="post" th:action="@{/}" th:object="${goodThing}" enctype="multipart/form-data" novalidate>
+      <div class="row no-gutters bg-light border-bottom border-darkgray">
+        <div class="col-lg-6 text-white showcase-img" th:classappend="${approvedGoodThings.size() % 2 == 0 ? 'order-lg-2' : ''}" >
+          <div class="image-upload-wrap-goodthings">
+            <input class="file-upload-input-goodthings" type='file' name="files" onchange="readURL(this);" accept="image/*" />
+            <div class="drag-text-goodthings">
+              <h3>Додади насловна фотографија</h3>
+            </div>
+          </div>
+          <div class="file-upload-content-goodthings">
+            <img class="file-upload-image-goodthings" alt="your image" />
+            <div class="image-title-wrap-goodthings mt-2">
+              <button type="button" id="removeImage" onclick="removeUpload()" class="remove-image-goodthings">Remove <span class="image-title-goodthings">Uploaded Image</span></button>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-6 my-auto" th:classappend="${approvedGoodThings.size() % 2 == 0  ? 'order-lg-1' : ''}" >
+          <div class="px-5 mx-3 pt-3">
+            <h3>
+              <center>Сподели твое или нечие добро дело</center>
+            </h3>
+            <div class="form-row mt-5">
+              <div class="col-md-12">
+                <!-- <label for="validationCustom01">Наслов</label> -->
+                <div class="input-group">
+                  <input type="text" th:field="*{title}" class="form-control" id="validationCustom01" autocomplete="off" placeholder="Наслов" required>
+                  <div class="input-group-append">
+                    <div class="input-group-text"><i class="fas fa-hand-holding-heart"></i></div>
+                  </div>
+                  <div class="invalid-feedback">
+                    Воведи наслов
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="form-row mt-2">
+              <div class="col-md-12">
+                <!-- <label for="organizer">Создател</label> -->
+                <div class="input-group">
+                  <input type="text" th:field="*{author}" class="form-control" id="organizer" placeholder="Создател на доброто дело" autocomplete="off" required>
+                  <div class="input-group-append">
+                    <div class="input-group-text"><i class="fas fa-signature"></i></div>
+                  </div>
+                  <div class="invalid-feedback">
+                    Воведи создател
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="form-row mt-2">
+              <div class="col-md-12">
+                <!-- <label for="validationCustom04">Опис</label> -->
+                <div class="input-group">
+                  <textarea rows="8" th:field="*{text}" class="form-control" id="validationCustom04" autocomplete="off" placeholder="Опиши што точно е направено за доброто на градот Неготино"></textarea>
+                  <div class="input-group-append">
+                    <div class="input-group-text"><i class="fas fa-edit"></i></div>
+                  </div>
+                  <div class="invalid-feedback">
+                    Опиши го делото
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="col-md-12 mt-2">
+                <div class="input-group">
+                  <input type="hidden" class="form-control" id="image" autocomplete="off" required>
+                  <div class="input-group-append">
+                  </div>
+                </div>
+              </div>
+            </div>
+            <button class="btn btn-dark float-right mt-4" type="submit">Сподели</button>
+            <p class="m-0 text-gray">За доброто на Неготино</p>
+          </div>
+
+        </div>
+      </div>
+    </form>
+  </div>
+</section>
+
+
+<!-- Requested Good Things -->
+<section id="req-goodthings" sec:authorize="hasAuthority('MODERATOR')" class="showcase">
+
+  <div class="container mb-2 mt-3 border-bottom border-dark" th:if="${requestedGoodThings.size() == 0}">
+    <h3 style="text-align:center">Requested Good Things</h3>
+  </div>
+  <div class="container mb-2 mt-3 border-bottom border-dark" th:unless="${requestedGoodThings.size() == 0}">
+    <h3 style="text-align:center" th:text="|Requested Good Things - ${requestedGoodThings.size()}"></h3>
+  </div>
+
+  <th:block class="p-3" th:if="${requestedGoodThings.size() == 0}">
+    <p style="text-align:center">There are no requested Talents</p>
+  </th:block>
+  <th:block class="p-3" th:unless="${requestedGoodThings.size() == 0}">
+
+  <div class="container-fluid p-0">
+    <div class="row no-gutters" th:each="goodThing,iter : ${requestedGoodThings}">
+      <div class="col-lg-6 text-white showcase-img" th:style="|background:url(data:image/jpeg;base64,${imageEncoder.generateBase64Image(goodThing.getImgData(),defaultImageGoodThing)}); background-size: cover;|" th:classappend="${iter.odd ? 'order-lg-2' : ''}" >
+      </div>
+      <div class="col-lg-6 my-auto showcase-text" th:classappend="${iter.odd ? 'order-lg-1' : ''}" >
+        <h2 th:text="${goodThing.getTitle()}"></h2>
+        <p class="pt-2" th:text="${goodThing.getText()}"></p>
+        <h4 class="text-muted pt-3">
+          <i class="fas fa-crown"></i>
+          <small th:text="${goodThing.getAuthor()}">
+          </small>
+        </h4>
+        <div class="pt-4">
+          <form method="POST" style="float:left;" th:action="@{/good-things/approve}" >
+            <input type="hidden" name="goodThingApproveId" id="lbl2" th:value="${goodThing.getId()}" />
+            <button type="submit" name="discard" id="approve" value="value" class="btn btn-success">Approve</button>
+          </form>
+          <form method="POST" style="float:right;" th:action="@{/good-things/discard}" onsubmit="return confirm('Do you really want to delete the good thing?');">
+            <input type="hidden" name="goodThingDiscardId" id="lbl3" th:value="${goodThing.getId()}" />
+            <button type="submit" name="discard" id="discard2" value="value" class="btn btn-danger">Discard</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="container-fluid mb-2 mt-3 border-top border-dark">
+    <div class="row mt-2">
+      <div class="col-lg-12">
+        <form method="POST" style="float:left;" th:action="@{/good-things/approve-all}" onsubmit="return confirm('Do you really want to approve all the requested good thing?');">
+          <input type="hidden" name="good-things-discard-all" id="lblDiscardAll" />
+          <button type="submit" name="approve-all" id="approve-all" value="value" class="btn btn-outline-success">Approve All</button>
+        </form>
+
+        <form method="POST" style="float:right;" th:action="@{/good-things/discard-all}" onsubmit="return confirm('Do you really want to discard all the requested good things?');">
+          <input type="hidden" name="good-thing-approve-all" id="lblAproveAll" />
+          <button type="submit" name="approve-all" id="discard-all" value="value" class="btn btn-outline-danger">Discard All</button>
+        </form>
+      </div>
+
+    </div>
+  </div>
+  </th:block>
+</section>
+
+
+<!-- Modal -->
+<th:block th:replace="fragments/modal"></th:block>
+
+<!-- Footer -->
+<th:block th:replace="fragments/footer"></th:block>
+
+
+
+<!--  Java Script files-->
+<th:block th:replace="fragments/js"></th:block>
+
+
+<!-- Bootstrap core JavaScript -->
+<!--  <script src="vendor/jquery/jquery.min.js"></script>-->
+<!--  <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>-->
+<script>
+        // To include or not ?
+  // window.sr = ScrollReveal();
+  // sr.reveal('.testimonials',{duration:1000});
+  // sr.reveal('.showcase',{duration:1000});
+  // sr.reveal('.container',{duration:1000});
+  // sr.reveal('.container-fluid',{duration:1000});
+  // sr.reveal('.row',{duration:1000});
+
+        (function() {
+          'use strict';
+          window.addEventListener('load', function() {
+            // Fetch all the forms we want to apply custom Bootstrap validation styles to
+            var forms = document.getElementsByClassName('needs-validation');
+            // Loop over them and prevent submission
+            var validation = Array.prototype.filter.call(forms, function(form) {
+              form.addEventListener('submit', function(event) {
+                if (form.checkValidity() === false) {
+                  form.classList.add('was-validated');
+                  event.preventDefault();
+                  event.stopPropagation();
+                }
+                else
+                {
+                  event.preventDefault();
+                  event.stopPropagation();
+
+                  var formData = new FormData($('.needs-validation')[0]);
+                  // var formData = new FormData("this");
+
+                  $.ajax({
+                    url: "/good-things/add",
+                    method: "POST",
+                    data: formData,
+                    success: function (data, textStatus)
+                    {
+                      $("#success_tic").modal();
+                      $("#req-goodthings").replaceWith(data); // upd
+                    },
+                    contentType: false,
+                    processData: false,
+                    cache: false,
+                  });
+
+                  $("#removeImage").click();
+                  form.classList.remove('was-validated');
+                  form.reset();
+                }
+              }, false);
+
+            });
+
+          }, false);
+
+        })();
+
+   $(document).keydown(function(event) {
+     if (event.keyCode == 27)
+     {
+       // $("#close-modal-login").click();
+       $('.close').click();
+     }
+   });
+
+  $('.counter').each(function () {
+    $(this).prop('Counter',0).animate({
+      Counter: $(this).text()
+    }, {
+      duration: 4000,
+      // or 6000
+      easing: 'swing',
+      step: function (now) {
+        $(this).text(Math.ceil(now));
+      }
+    });
+  });
+
+  function readURL(input) {
+    if (input.files && input.files[0]) {
+      var reader = new FileReader();
+
+      reader.onload = function(e) {
+        $('.image-upload-wrap-goodthings').hide();
+
+        $('.file-upload-image-goodthings').attr('src', e.target.result);
+        $('.file-upload-content-goodthings').show();
+
+        $('.image-title-goodthings').html(input.files[0].name);
+      };
+
+      reader.readAsDataURL(input.files[0]);
+    } else {
+      removeUpload();
+    }
+  }
+
+  function removeUpload() {
+    $('.file-upload-input-goodthings').replaceWith($('.file-upload-input-goodthings').clone());
+    $('.file-upload-content-goodthings').hide();
+    $('.image-upload-wrap-goodthings').show();
+  }
+  $('.image-upload-wrap-goodthings').bind('dragover', function() {
+    $('.image-upload-wrap-goodthings').addClass('image-dropping-goodthings');
+  });
+  $('.image-upload-wrap-goodthings').bind('dragleave', function() {
+    $('.image-upload-wrap-goodthings').removeClass('image-dropping-goodthings');
+  });
+
+
+</script>
+</body>
+
+</html>

@@ -1,0 +1,12 @@
+th:style="|background:url(data:image/jpeg;base64,${imageEncoder.generateBase64Image(goodThing.getImgData(),defaultImageDonation)})no-repeat;|"
+
+
+
+
+
+
+
+
+
+
+<div class="col-lg-6 col-6 order-2 order-lg-2 text-white showcase-img" th:style="|background-image: url(@{Photos/food.jpg});|">-->

@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+
+<head>
+    <title th:text="|Неготино - ${news.getTitle()}"></title>
+    <th:block th:replace="fragments/head"></th:block>
+<!--    <div id="fb-root"></div>-->
+<!--    <script async defer crossorigin="anonymous" src="https://connect.facebook.net/mk_MK/sdk.js#xfbml=1&version=v7.0&appId=270495224040177&autoLogAppEvents=1" nonce="XbvovUW1"></script>-->
+
+<!--    <meta property="og:url"           th:content= "|/news/single-post/${news.getId()}|" />-->
+<!--    <meta property="og:type"          content="website" />-->
+<!--    <meta property="og:title"        content="aberkaaa" />-->
+<!--    <meta property="og:description"  content="dddaaa" />-->
+<!--    <meta property="og:image"         content="https://tocka.com.mk/images/content/golemi/2020-06/ao5Xs-screenshot-4.png" />-->
+</head>
+
+<body>
+    <th:block th:replace="fragments/navbar"></th:block>
+
+    <!-- ##### Post Details Area Start ##### -->
+    <section class="post-news-area mt-5 mb-2">
+        <div class="container">
+            <div class="row justify-content-center">
+                <!-- Post Details Content Area -->
+                <div class="col-12 col-lg-8">
+                  <div class="post-details-title-area bg-overlay clearfix" th:style="|background:url(data:image/jpeg;base64,${imageEncoder.generateBase64Image(news.getImgData(),defaultImageNews)}); background-size: cover;|" >
+                      <div class="h-100">
+                          <div class="row h-100">
+                              <div class="col-12 col-lg-11">
+                                  <!-- Post Content -->
+                                  <div class="post-content">
+                                      <p class="tag ml-3">
+                                          <span th:text="${news.getType()}"></span>
+                                      </p>
+                                      <p th:text="${news.getTitle()}" class="post-title ml-2"></p>
+                                      <span th:text="|${sdf.format(approvedNews.get(0).getDate())}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;${approvedNews.get(0).getAuthor()}|" class="post-date ml-2 mt-2"></span>
+<!--                                      <div class="d-flex align-items-center">-->
+<!--                                          <span th:text="${sdf.format(news.getDate())}" class="post-date mr-30"></span>-->
+<!--                                          <span th:text="${news.getAuthor()}" class="post-date"></span>-->
+<!--                                      </div>-->
+                                  </div>
+                              </div>
+                          </div>
+                      </div>
+                  </div>
+                   <div class="post-details-content mt-5 mb-100">
+                        <p th:text="${news.getText()}"></p>
+                       <!-- Your share button code -->
+                       <div class="d-flex justify-content-center mt-5">
+                        <div class="fb-share-button mr-3"
+                           th:attr="data-href=|/news/single-post/${news.getId()}|"
+                           data-layout="button_count" data-size="large">
+                        </div>
+                        <a href="https://twitter.com/share?ref_src=twsrc%5Etfw" class="twitter-share-button ml-5" data-size="large" data-show-count="false">Tweet</a><script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+<!--                           <a href="https://twitter.com/intent/tweet?text=Ви го откриваме брзиот трик: Валканите патики повторно може да бидат бели како кога сте ги купиле &amp;url=https%3A%2F%2Ftocka.com.mk%2Fvesti%2F314020%2Fvi-go-otkrivame-brziot-trik-valkanite-patiki-povtorno-moze-da-bidat-beli-kako-koga-ste-gi-kupile&amp;via=tocka_mk" title="Tweet on Twitter" onclick="window.open(this.href, '','left=50,top=50,width=600,height=350,toolbar=0'); return false;">-->
+<!--                               <i class="fa fa-twitter" aria-hidden="true"></i>-->
+<!--                           </a>-->
+                      </div>
+                   </div>
+<!--                    <div class="fb-share-button" data-href="|http://localhost:8800/news/single-post/${news.getId()}|" data-layout="button_count" data-size="small"><a target="_blank" href="https://www.facebook.com/sharer/sharer.php?href=http%3A%2F%2Flocalhost%3A8800%2Fnews%2Fsingle-post%2F216&amp;src=sdkpreparse" class="fb-xfbml-parse-ignore">Сподели</a></div>-->
+                </div>
+
+                <!-- Sidebar Widget -->
+                <div class="col-12 col-sm-9 col-md-6 col-lg-4">
+                    <div class="sidebar-area">
+
+                        <a class="add-news" style="text-decoration:none" href="/news/add">
+                            <div class="single-widget-area newsletter-widget mb-30 bg-white border border-dark">
+                                <img src="/Photos/addIcon.png" alt="Logo">
+                                <h4 class="hide-href1 pt-4" style="text-decoration:none;">Додади Новост</h4>
+                            </div>
+                        </a>
+
+                        <!-- Latest News Widget -->
+                        <div class="single-widget-area news-widget mb-30" th:if="${approvedNews != null}">
+                            <h4 class="border-bottom border-danger th:if">Последни Новости</h4>
+
+<!--                            <th:block class="p-3" th:if="${approvedNews.size() >= 50}">-->
+<!--                                <div class="single-blog-post d-flex style-4 mb-30" th:each="i : ${#numbers.sequence(0,9)}" th:if="${approvedNews.get(i).getId() != news.getId()}">-->
+<!--                            </th:block>-->
+<!--                            <th:block class="p-3" th:unless="${approvedNews.size() >= 0}">-->
+<!--                                <div class="single-blog-post d-flex style-4 mb-30" th:each="news,i : ${approvedNews}" th:if="${approvedNews.get(i).getId() != news.getId()}">-->
+<!--                            </th:block>-->
+
+                            <div class="single-blog-post d-flex style-4 mb-30" th:each="i : ${#numbers.sequence(0,9)}" th:if="${approvedNews.get(i).getId() != news.getId()}">
+
+                                <!-- Blog Thumbnail -->
+                                <div class="blog-thumbnail">
+                                    <a th:href="|/news/single-post/${approvedNews.get(i).getId()}|">
+                                        <img class="latest-news" th:src=" 'data:image/jpeg;base64,'+ ${imageEncoder.generateBase64Image(approvedNews.get(i).getImgData(),defaultImageNews)}" alt="No image" />
+                                    </a>
+                                </div>
+                                <!-- Blog Content -->
+                                <div class="blog-content">
+                                    <span th:text="${sdf.format(approvedNews.get(i).getDate())}" class="post-date"></span>
+                                    <a th:text="${approvedNews.get(i).getTitle()}" th:href="|/news/single-post/${approvedNews.get(i).getId()}|" class="post-title"></a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- ##### Post Details Area End ##### -->
+
+
+<!--    <div class="fb-share-button" data-href="https://tocka.com.mk/vesti/346522/video-taftalidze-so-fakli-go-proslavi-plasmanot-na-tft-vo-elitata" data-layout="button_count" data-size="small"><a target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Ftocka.com.mk%2Fvesti%2F346522%2Fvideo-taftalidze-so-fakli-go-proslavi-plasmanot-na-tft-vo-elitata&amp;src=sdkpreparse" class="fb-xfbml-parse-ignore">Сподели</a></div>-->
+
+    <!-- Footer -->
+    <th:block th:replace="fragments/footer"></th:block>
+
+    <script src="js/jquery/jquery-2.2.4.min.js"></script>
+    <th:block th:replace="fragments/js"></th:block>
+
+    <!-- Load Facebook SDK for JavaScript -->
+    <div id="fb-root"></div>
+    <script>
+        (function(d, s, id) {
+        var js, fjs = d.getElementsByTagName(s)[0];
+        if (d.getElementById(id)) return;
+        js = d.createElement(s); js.id = id;
+        js.src = "https://connect.facebook.net/en_US/sdk.js#xfbml=1&version=v3.0";
+        fjs.parentNode.insertBefore(js, fjs);
+    }(document, 'script', 'facebook-jssdk'));
+    </script>
+
+
+</body>
+
+</html>

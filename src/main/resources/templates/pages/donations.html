@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+  <title>Неготино - Донации</title>
+  <th:block th:replace="fragments/head"></th:block>
+</head>
+
+<body>
+
+<th:block th:replace="fragments/navbar"></th:block>
+<!--<h1 class="text-center" sec:authentication="name" />-->
+
+  <!--Donation Carousel-->
+  <div id="carouselExampleFade" class="carousel slide carousel-fade" data-ride="carousel">
+    <div class="carousel-inner">
+      <th:block th:each="donation,iter : ${approvedDonations}">
+      <div class="carousel-item single-blog-post style-1" th:classappend="${iter.index == 0 ? 'active' : ''}">
+        <div class="view">
+          <img class="w-100" th:src="'data:image/jpeg;base64,'+ ${imageEncoder.generateBase64Image(donation.getImgData(),defaultImageDonation)}" alt="Second slide" >
+        </div>
+        <div class="carousel-caption">
+          <div class="blog-content">
+            <div class="blog-content-hovered">
+              <div class="container">
+                <a th:href="|/donations/single-donation/${donation.getId()}|" class="post-title" style="font-size:20px" th:text="${donation.getTitle()}"></a>
+                <span class="post-date mt-2" th:text="${donation.getContact()}">June 20, 2018???</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      </th:block>
+    </div>
+    <a class="carousel-control-prev" href="#carouselExampleFade" role="button" data-slide="prev">
+      <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+      <span class="sr-only">Previous</span>
+    </a>
+    <a class="carousel-control-next" href="#carouselExampleFade" role="button" data-slide="next">
+      <span class="carousel-control-next-icon" aria-hidden="true"></span>
+      <span class="sr-only">Next</span>
+    </a>
+  </div>
+
+  <!-- Approved Donations -->
+  <div class="container mt-4">
+    <div class="text-center">
+<!--      <h1>Сите Донации</h1>-->
+    </div>
+    <div class="container">
+      <div class="card-columns">
+        <div class="card h-100" th:each="donation : ${approvedDonations}">
+          <a th:href="|/donations/single-donation/${donation.getId()}|">
+            <img th:src="'data:image/jpeg;base64,'+ ${imageEncoder.generateBase64Image(donation.getImgData(),defaultImageDonation)}" alt="" >
+          </a>
+          <div class="card-body">
+            <p class="rounded bg-warning float-right p-1" th:text="${donation.getType()}"></p>
+            <h4 class="card-title" th:text="${donation.getTitle()}">
+            </h4>
+            <p class="card-text" th:text="|${#strings.substring(donation.getText(),0,350)}...|" th:if="${donation.getText().length() > 350}"></p>
+            <p class="card-text" th:text="${donation.getText()}" th:unless="${donation.getText().length() > 350}"></p>
+          </div>
+          <div class="card-footer text-right">
+            <p class="text-muted float-left mt-1">
+              <i class="far fa-user"></i>
+              <small th:text="${donation.getAuthor()}">
+              </small>
+              <i class="fas fa-phone-alt ml-2"></i>
+                 <small th:text="${donation.getContact()}"></small>
+            </p>
+            <form th:action="@{/donations/single-donation/{path}(path=${donation.getId()})}" >
+            <button class="btn btn-secondary">Прочитај</button>
+            </form>
+          </div>
+          <div>
+            <form sec:authorize="hasAuthority('ADMIN')" method="POST" style="text-align: center" th:action="@{/donations/discard}" onsubmit="return confirm('Do you really want to discard the requested donation?');">
+              <input type="hidden" name="donationDiscardId" id="lbl" th:value="${donation.getId()}" />
+              <button type="submit" name="discard" id="discard" value="value" class="btn btn-danger">Discard</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add Donation -->
+  <div sec:authorize="hasAuthority('ROLE_USER')" class="bg-light">
+    <div class="container p-4">
+      <form class="needs-validation mt-2" th:method="post" th:action="@{/}" th:object="${donation}" enctype="multipart/form-data" novalidate>
+      <div class="row ml-2">
+        <div class="col-4 border border-darkgray rounded-lg">
+          <h3 class="pt-3">
+            <center>Донирај/Побарај</center>
+          </h3>
+            <div class="form-group mt-4 mb-2">
+              <label for="exampleFormControlSelect1">Одбери вид</label>
+              <select th:field="*{type}" class="custom-select" id="exampleFormControlSelect1">
+                <option th:value="Апел">Потребна е донација</option>
+                <option th:value="Донирам">Јас донирам</option>
+              </select>
+            </div>
+            <div class="form-row">
+              <div class="col-md-12">
+                <label for="validationCustom01">Наслов</label>
+                <div class="input-group">
+                  <input type="text" th:field="*{title}" class="form-control" id="validationCustom01" autocomplete="off" placeholder="Наслов на донацијата" required>
+                  <div class="input-group-append">
+                    <div class="input-group-text"><i class="fas fa-hand-holding-heart"></i></div>
+                  </div>
+                  <div class="invalid-feedback">
+                    Воведи име
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="col-md-12 mt-2">
+                <label for="organizer">Контакт</label>
+                <div class="input-group">
+                  <input type="text" th:field="*{contact}" class="form-control" id="organizer" placeholder="Телефонски број" autocomplete="off" required>
+                  <div class="input-group-append">
+                    <div class="input-group-text"><i class="fas fa-phone"></i></div>
+                  </div>
+                  <div class="invalid-feedback">
+                    Воведи број
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="col-md-12 mt-2">
+                <label for="validationCustom04">Опис</label>
+                <div class="input-group">
+                  <textarea rows="4" th:field="*{text}" class="form-control" id="validationCustom04" autocomplete="off" placeholder="За што точно се бара донација или имаш желба да подариш. Опис и начин на извршување на донацијата"></textarea>
+                  <div class="input-group-append">
+                    <div class="input-group-text"><i class="fas fa-edit"></i></div>
+                  </div>
+                  <div class="invalid-feedback">
+                    Опиши ја донацијата
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="col-md-12 mt-2">
+                <div class="input-group">
+                  <input type="hidden" class="form-control" id="image" autocomplete="off" required>
+                  <div class="input-group-append">
+                  </div>
+                </div>
+              </div>
+            </div>
+            <button class="btn btn-dark float-right mt-3 mb-2" type="submit">Сподели</button>
+        </div>
+
+        <div class="col-2"></div>
+
+        <div class="col-6 d-flex align-items-center">
+          <div class="p-3">
+            <div class="image-upload-wrap-donations">
+              <input class="file-upload-input-donations" type='file' name="files" onchange="readURL(this);" accept="image/*" />
+              <div class="drag-text-donations">
+                <h3>Додади насловна фотографија</h3>
+              </div>
+            </div>
+            <div class="file-upload-content-donations">
+              <img class="file-upload-image-donations" alt="your image" />
+              <div class="image-title-wrap-donations mt-2">
+                <button type="button" id="removeImage" onclick="removeUpload()" class="remove-image-donations">Remove <span class="image-title-donations">Uploaded Image</span></button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    </form>
+  </div>
+
+<!-- Requested Donations -->
+ <div id="req-donations" sec:authorize="hasAuthority('MODERATOR')" class="requested-donations m-2">
+
+   <div class="container mb-2 mt-3 border-bottom border-dark" th:if="${requestedDonations.size() == 0}">
+     <h3 style="text-align:center">Requested Donations</h3>
+   </div>
+   <div class="container mb-2 mt-3 border-bottom border-dark" th:unless="${requestedDonations.size() == 0}">
+     <h3 style="text-align:center" th:text="|Requested Donations - ${requestedDonations.size()}"></h3>
+   </div>
+<!--  <div class="container mb-2 mt-3 border-bottom border-dark">-->
+<!--    <h3 style="text-align:center">Requested Donations</h3>-->
+<!--  </div>-->
+  <th:block class="p-3" th:if="${requestedDonations.size() == 0}">
+    <p style="text-align:center">There are no requested Donations</p>
+  </th:block>
+  <th:block class="p-3" th:unless="${requestedDonations.size() == 0}">
+
+  <div class="container mt-4">
+
+      <div class="card-columns">
+        <div class="card h-100" th:each="donation : ${requestedDonations}">
+          <a href="#">
+            <img th:src="'data:image/jpeg;base64,'+ ${imageEncoder.generateBase64Image(donation.getImgData(),defaultImageDonation)}" alt="" >
+          </a>
+          <div class="card-body">
+            <p class="rounded border bg-warning float-right p-1" th:text="${donation.getType()}"></p>
+            <h4 class="card-title" th:text="${donation.getTitle()}">
+            </h4>
+            <p class="card-text" th:text="${donation.getText()}"></p>
+          </div>
+          <div class="card-footer text-right">
+            <p class="text-muted float-left mt-1">
+              <i class="far fa-user"></i>
+              <small th:text="${donation.getAuthor()}">
+              </small>
+              <i class="fas fa-phone-alt ml-2"></i>
+              <small th:text="${donation.getContact()}"></small>
+            </p>
+            <button class="btn btn-secondary">Прочитај</button>
+
+          </div>
+          <div class="row w-100 mr-0">
+            <div class="col-3 float-left">
+              <form  method="POST" th:action="@{/donations/approve}"  ;>
+                <input type="hidden" id="lbl15" name="donationApproveId" th:value="${donation.getId()}" />
+                <button type="submit" name="approve" id="approve" value="value4" class="btn btn-success">Approve</button>
+              </form>
+            </div>
+            <div class="col-6"></div>
+            <div class="col-3 float-right">
+              <form  method="POST" th:action="@{/donations/discard}" onsubmit="return confirm('Do you really want to discard the requested donation?');">
+                <input type="hidden" name="donationDiscardId" id="lbl" th:value="${donation.getId()}" />
+                <button type="submit" name="discard" id="discard" value="value" class="btn btn-danger">Discard</button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+  </div>
+
+  <div class="container mb-2 mt-3 border-top border-dark">
+  <div class="row mt-2">
+    <div class="col-lg-12">
+      <form method="POST" style="float:left;" th:action="@{/donations/approve-all}" onsubmit="return confirm('Do you really want to approve all the requested donations?');">
+<!--        <input type="hidden" name="donation-discard-all" id="lblDiscardAll" />-->
+        <button type="submit" name="approve-all" id="approve-all" value="value" class="btn btn-outline-success">Approve All</button>
+      </form>
+
+      <form method="POST" style="float:right;" th:action="@{/donations/discard-all}" onsubmit="return confirm('Do you really want to discard all the requested donations?');">
+<!--        <input type="hidden" name="talent-approve-all" id="lblAproveAll" />-->
+        <button type="submit" name="discard-all" id="discard-all" value="value" class="btn btn-outline-danger">Discard All</button>
+      </form>
+    </div>
+
+  </div>
+</div>
+
+  </th:block>
+</div>
+
+<!-- Modal -->
+<th:block th:replace="fragments/modal"></th:block>
+
+<!--Footer-->
+<th:block th:replace="fragments/footer"></th:block>
+
+
+    <!--  Java Script files-->
+<th:block th:replace="fragments/js"></th:block>
+
+  <script>
+
+
+    (function() {
+      'use strict';
+      window.addEventListener('load', function() {
+        // Fetch all the forms we want to apply custom Bootstrap validation styles to
+        var forms = document.getElementsByClassName('needs-validation');
+        // Loop over them and prevent submission
+        var validation = Array.prototype.filter.call(forms, function(form) {
+          form.addEventListener('submit', function(event) {
+            if (form.checkValidity() === false) {
+              form.classList.add('was-validated');
+              event.preventDefault();
+              event.stopPropagation();
+            }
+            else
+            {
+              event.preventDefault();
+              event.stopPropagation();
+
+              var formData = new FormData($('.needs-validation')[0]);
+              // var formData = new FormData("this");
+
+              $.ajax({
+                url: "/donations/add",
+                method: "POST",
+                data: formData,
+                success: function (data, textStatus)
+                {
+                  $("#success_tic").modal();
+                  $("#req-donations").replaceWith(data); // upd
+                },
+                contentType: false,
+                processData: false,
+                cache: false,
+              });
+
+              $("#removeImage").click();
+              form.classList.remove('was-validated');
+              form.reset();
+            }
+          }, false);
+
+        });
+
+      }, false);
+
+    })();
+
+    $(document).keydown(function(event) {
+      if (event.keyCode == 27)
+      {
+        $('.close').click();
+      }
+    });
+
+    function readURL(input)
+    {
+      if (input.files && input.files[0]) {
+        var reader = new FileReader();
+
+        reader.onload = function(e) {
+          $('.image-upload-wrap-donations').hide();
+
+          $('.file-upload-image-donations').attr('src', e.target.result);
+          $('.file-upload-content-donations').show();
+
+          $('.image-title-donations').html(input.files[0].name);
+        };
+
+        reader.readAsDataURL(input.files[0]);
+      } else {
+        removeUpload();
+      }
+    }
+
+
+    function removeUpload() {
+      $('.file-upload-input-donations').replaceWith($('.file-upload-input-donations').clone());
+      $('.file-upload-content-donations').hide();
+      $('.image-upload-wrap-donations').show();
+    }
+    $('.image-upload-wrap-donations').bind('dragover', function() {
+      $('.image-upload-wrap-donations').addClass('image-dropping-donations');
+    });
+    $('.image-upload-wrap-donations').bind('dragleave', function() {
+      $('.image-upload-wrap-donations').removeClass('image-dropping-donations');
+    });
+  </script>
+
+</body>
+
+</html>

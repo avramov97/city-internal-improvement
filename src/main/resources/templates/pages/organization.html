@@ -1,0 +1,191 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <title>Неготино - Организација</title>
+    <link rel="icon" href="/img/neg_grb.png">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.20/css/dataTables.bootstrap4.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.20/css/jquery.dataTables.min.css">
+    <!-- Font Awesome -->
+    <script src="https://kit.fontawesome.com/a076d05399.js"></script>
+</head>
+
+<body>
+<th:block th:replace="fragments/navbar"></th:block>
+
+<div class="container mb-3 mt-3">
+
+    <div class="container mt-5">
+        <div class="row clearfix">
+            <div class="col-md-12 table-responsive">
+<!--                <table class="table table-bordered table-hover table-sortable" id="tab_logic">-->
+                    <table id="tab_logic" class="display" style="width: 100%;" >
+                    <thead>
+                    <tr>
+                        <th class="text-center">
+                            Username
+                        </th>
+                        <th class="text-center">
+                            Role
+                        </th>
+                        <th class="text-center">
+                            Change Role
+                        </th>
+                        <th class="text-center" style="border-top: 1px solid #ffffff; border-right: 1px solid #ffffff;">
+                        <!--                          Save                  -->
+                        </th>
+
+                    </tr>
+                    </thead>
+                    <tbody>
+                        <tr id="users-id" class="hidden" th:each="user : ${users}" th:if="${user.getUsername() != username}">
+
+                            <td class="id" data-name="name" th:text="${user.getUsername()}"></td>
+
+                            <form id="form-save" class="form_save mr-2" method="post" th:action="@{/organization/change-role}">
+                            <th:block th:switch="true">
+
+                                <!--                ROOT-ADMIN          -->
+                                <th:block th:case="${user.getAuthorities().contains(root_admin)}">
+                                    <td class="id" data-name="sel">ROOT-ADMIN</td>
+                                    <td data-name="sel">
+                                        <select class="custom-select" name="change" disabled>
+                                            <option value="" selected>Change Role Forbidden</option>
+                                        </select>
+                                    </td>
+                                </th:block>
+
+                                <!--                ADMIN          -->
+                                <th:block th:case="${user.getAuthorities().contains(admin)}">
+                                    <td class="id" data-name="sel">ADMIN</td>
+                                    <td data-name="sel">
+                                        <select name="change" class="custom-select" >
+                                            <option value="" selected>Change Role</option>
+                                            <option value="MODERATOR">MODERATOR</option>
+                                            <option value="ROLE_USER">USER</option>
+                                        </select>
+                                    </td>
+                                </th:block>
+
+                                <!--                MODERATOR         -->
+                                <th:block th:case="${user.getAuthorities().contains(moderator)}">
+                                    <td class="id" data-name="sel">MODERATOR</td>
+                                    <td data-name="sel">
+                                        <select name="change" class="custom-select" >
+                                            <option value="" selected>Change Role</option>
+                                            <option value="ADMIN">ADMIN</option>
+                                            <option value="ROLE_USER">USER</option>
+                                        </select>
+                                    </td>
+                                </th:block>
+
+                                <!--                USER          -->
+                                <th:block th:case="${user.getAuthorities().contains(role_user)}">
+                                    <td class="id" data-name="sel">ROLE_USER</td>
+                                    <td data-name="sel">
+                                        <select name="change" class="custom-select">
+                                            <option value="" selected>Change Role</option>
+                                            <option value="ADMIN">ADMIN</option>
+                                            <option value="MODERATOR">MODERATOR</option>
+                                        </select>
+                                    </td>
+                                </th:block>
+
+                            </th:block>
+
+                            <td  class="text-center">
+                               <div class="d-flex justify-content-center">
+
+                                 <input type="hidden" id="save-username" th:value="*{user.getUsername()}" name="username" />
+                                 <button th:if="${!user.getAuthorities().contains(root_admin)}" th:type="submit" class="btn btn-info btn-sm" ><i class="fas fa-save"></i></button>
+
+                            </form>
+
+                             <form th:if="${!user.getAuthorities().contains(root_admin)}" class="ml-2" id="form-delete" method="post" th:action="@{/organization/delete-user}" onsubmit="return confirm('Do you really want to remove the user?');">
+                                 <input type="hidden" id="delete-username" th:value="*{user.getUsername()}" name="username" />
+                                 <button class="btn btn-danger btn-sm" ><i class="fa fa-trash"></i></button>
+                             </form>
+                               </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+
+
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/bootstrap-table@1.16.0/dist/bootstrap-table.min.js"></script>
+
+    <script src="https://cdn.datatables.net/1.10.20/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.20/js/dataTables.bootstrap4.min.js"></script>
+
+    <script th:inline="javascript">
+
+        $(document).ready(function()
+        {
+            var table = $('#tab_logic').DataTable();
+
+            $('#button').click( function ()
+            {
+                var rows = table.rows('.selected').data();
+
+                for(var i=0;i<rows.length;i++)
+                {
+                    selectedRows[i] = rows[i][0];
+                }
+
+                var elem = document.getElementById("lbl");
+                if(typeof elem == null || elem == 'undefined' )
+                {
+                    alert('error');
+                }
+
+                //  alert(selectedRows);
+                document.getElementById("lbl").value = selectedRows;
+
+            } );
+
+            //          Save form with AJAX
+            // $('.form_save').submit(function (e)
+            // {
+            //     e.preventDefault();
+            //     alert("AHAA");
+            //
+            //     $.ajax({
+            //         url: "/organization/change-role",
+            //         method: "POST",
+            //         data: $('.form_save').serialize(),
+            //         // data: formData,
+            //         success: function (data)
+            //         {
+            //             alert(data);
+            //             console.log(data);
+            //              $("#users-id").replaceWith(data); // upd
+            //         }
+            //     });
+            // });
+
+        } );
+
+        //
+        // function getChange()
+        // {
+        //     alert($("#change-role :selected").text());
+        // }
+        //
+
+
+
+
+        /*]]>*/
+    </script>
+</body>
+</html>

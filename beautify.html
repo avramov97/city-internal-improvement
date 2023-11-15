@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+  <title>Неготино - Добри Работи</title>
+  <th:block th:replace="fragments/head"></th:block>
+  <link href="css/landing-page.min.css" rel="stylesheet">
+</head>
+
+<body>
+
+  <th:block th:replace="fragments/preloader"></th:block>
+
+  <th:block th:replace="fragments/navbar"></th:block>
+
+  <!-- Image gallery -->
+  <!--  <ul class="gallery_box">-->
+  <!--    <li>-->
+  <!--      <a href="#0"><img src="https://picsum.photos/600/700/?random">-->
+  <!--        <div class="box_data">-->
+  <!--          <span>Ravi With Bike</span>-->
+  <!--        </div>-->
+  <!--      </a>-->
+  <!--    </li>-->
+  <!--    <li>-->
+  <!--      <a href="#0"><img src="https://picsum.photos/600/701/?random">-->
+  <!--        <div class="box_data">-->
+  <!--          <span>Ravi Singh</span>-->
+  <!--        </div>-->
+  <!--      </a>-->
+  <!--    </li>-->
+  <!--    <li>-->
+  <!--      <a href="#0"><img src="https://picsum.photos/600/702/?random">-->
+  <!--        <div class="box_data">-->
+  <!--          <span>White wall</span>-->
+  <!--        </div>-->
+  <!--      </a>-->
+  <!--    </li>-->
+  <!--    <li>-->
+  <!--      <a href="#0"><img src="https://picsum.photos/600/703/?random">-->
+  <!--        <div class="box_data">-->
+  <!--          <span>Green Tree</span>-->
+  <!--        </div>-->
+  <!--      </a>-->
+  <!--    </li>-->
+  <!--    <li style="position: relative; top: -134px;">-->
+  <!--      <a href="#0"><img src="https://picsum.photos/600/704/?random">-->
+  <!--        <div class="box_data">-->
+  <!--          <span>Blue</span>-->
+  <!--        </div>-->
+  <!--      </a>-->
+  <!--    </li>-->
+  <!--    <li>-->
+  <!--      <a href="#0"><img src="https://picsum.photos/600/705/?random">-->
+  <!--        <div class="box_data">-->
+  <!--          <span>Ravi</span>-->
+  <!--        </div>-->
+  <!--      </a>-->
+  <!--    </li>-->
+  <!--  </ul>-->
+
+  <!-- Icons Grid -->
+  <section class="bg-light text-center testimonials">
+    <div class="container">
+      <h2 class="mb-5">Топ 3 лица кои направиле добри дела овој месец</h2>
+      <div class="row">
+        <div class="col-lg-4">
+          <div class="testimonial-item mx-auto mb-5 mb-lg-0">
+            <img class="img-fluid rounded-circle mb-3" src="Photos/img/testimonials-1.jpg" alt="">
+            <h5>Ристе Ефремов</h5>
+            <p class="font-weight-light mb-0">"This is fantastic! Thanks so much guys!"</p>
+          </div>
+        </div>
+        <div class="col-lg-4">
+          <div class="testimonial-item mx-auto mb-5 mb-lg-0">
+            <img class="img-fluid rounded-circle mb-3" src="Photos/img/testimonials-2.jpg" alt="">
+            <h5>Fred S.</h5>
+            <p class="font-weight-light mb-0">"Bootstrap is amazing. I've been using it to create lots of super nice landing pages."</p>
+          </div>
+        </div>
+        <div class="col-lg-4">
+          <div class="testimonial-item mx-auto mb-5 mb-lg-0">
+            <img class="img-fluid rounded-circle mb-3" src="Photos/img/testimonials-3.jpg" alt="">
+            <h5>Sarah W.</h5>
+            <p class="font-weight-light mb-0">"Thanks so much for making these free resources available to us!"</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Image Showcases -->
+  <section class="showcase">
+    <div class="container-fluid p-0">
+      <div class="row no-gutters">
+        <div class="col-lg-6 order-lg-2 text-white showcase-img" style="background-image: url('Photos/img/bg-showcase-1.jpg');"></div>
+        <div class="col-lg-6 order-lg-1 my-auto showcase-text">
+          <h2>Fully Responsive Design</h2>
+          <p class="lead mb-0">When you use a theme created by Start Bootstrap, you know that the theme will look great on any device, whether it's a phone, tablet, or desktop the page will behave responsively!</p>
+        </div>
+      </div>
+      <div class="row no-gutters">
+        <div class="col-lg-6 text-white showcase-img" style="background-image: url('Photos/img/bg-showcase-2.jpg');"></div>
+        <div class="col-lg-6 my-auto showcase-text">
+          <h2>Updated For Bootstrap 4</h2>
+          <p class="lead mb-0">Newly improved, and full of great utility classes, Bootstrap 4 is leading the way in mobile responsive web development! All of the themes on Start Bootstrap are now using Bootstrap 4!</p>
+        </div>
+      </div>
+      <div class="row no-gutters">
+        <div class="col-lg-6 order-lg-2 text-white showcase-img" style="background-image: url('Photos/img/bg-showcase-3.jpg');"></div>
+        <div class="col-lg-6 order-lg-1 my-auto showcase-text">
+          <h2>Easy to Use &amp; Customize</h2>
+          <p class="lead mb-0">Landing Page is just HTML and CSS with a splash of SCSS for users who demand some deeper customization options. Out of the box, just add your content and images, and your new landing page will be ready to go!</p>
+        </div>
+      </div>
+    
+
+      <form class="needs-validation" th:method="post" th:action="@{/good-things/add}" th:object="${goodThing}" enctype="multipart/form-data" novalidate>
+        <div class="row no-gutters bg-light border-bottom border-darkgray">
+          <div class="col-lg-6 text-white showcase-img">
+            <div class="image-upload-wrap-goodthings">
+              <input class="file-upload-input-goodthings" type='file' name="files" onchange="readURL(this);" accept="image/*" />
+              <div class="drag-text-goodthings">
+                <h3>Додади насловна фотографија</h3>
+              </div>
+            </div>
+            <div class="file-upload-content-goodthings">
+              <img class="file-upload-image-goodthings" src="#" alt="your image" />
+              <div class="image-title-wrap-goodthings mt-2">
+                <button type="button" onclick="removeUpload()" class="remove-image-goodthings">Remove <span class="image-title-goodthings">Uploaded Image</span></button>
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-6 my-auto show">
+            <div class="px-5 mx-3">
+              <h3>
+                <center>Сподели твое или нечие добро дело</center>
+              </h3>
+              <div class="form-row mt-5">
+                <div class="col-md-12">
+                  <!-- <label for="validationCustom01">Наслов</label> -->
+                  <div class="input-group">
+                    <input type="text" th:field="*{title}" class="form-control" id="validationCustom01" autocomplete="off" placeholder="Наслов" required>
+                    <div class="input-group-append">
+                      <div class="input-group-text"><i class="fas fa-hand-holding-heart"></i></div>
+                    </div>
+                    <div class="invalid-feedback">
+                      Воведи наслов
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="form-row mt-2">
+                <div class="col-md-12">
+                  <!-- <label for="organizer">Создател</label> -->
+                  <div class="input-group">
+                    <input type="text" th:field="*{author}" class="form-control" id="organizer" placeholder="Создател на доброто дело" autocomplete="off" required>
+                    <div class="input-group-append">
+                      <div class="input-group-text"><i class="fas fa-signature"></i></div>
+                    </div>
+                    <div class="invalid-feedback">
+                      Воведи создател
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="form-row mt-2">
+                <div class="col-md-12">
+                  <!-- <label for="validationCustom04">Опис</label> -->
+                  <div class="input-group">
+                    <textarea rows="8" th:field="*{text}" class="form-control" id="validationCustom04" autocomplete="off" placeholder="Опиши што точно е направено за доброто на градот Неготино"></textarea>
+                    <div class="input-group-append">
+                      <div class="input-group-text"><i class="fas fa-edit"></i></div>
+                    </div>
+                    <div class="invalid-feedback">
+                      Опиши го делото
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="form-row">
+                <div class="col-md-12 mt-2">
+                  <div class="input-group">
+                    <input type="hidden" class="form-control" id="image" autocomplete="off" required>
+                    <div class="input-group-append">
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <button class="btn btn-dark float-right mt-5" type="submit">Сподели</button>
+      </form>
+      <p class="m-0 text-gray">За доброто на Неготино</p>
+    </div>
+
+  </section>
+
+
+  <!-- Footer -->
+  <footer class="py-5 bg-dark">
+    <div class="container">
+      <p class="m-0 text-center text-white">Avramov &copy; Your Website 2020</p>
+    </div>
+    <!-- /.container -->
+  </footer>
+
+
+  <!--  Java Script files-->
+  <th:block th:replace="fragments/js"></th:block>
+
+
+  <!-- Bootstrap core JavaScript -->
+  <!--  <script src="vendor/jquery/jquery.min.js"></script>-->
+  <!--  <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>-->
+  <script>
+    function readURL(input) {
+      if (input.files && input.files[0]) {
+        var reader = new FileReader();
+
+        reader.onload = function(e) {
+          $('.image-upload-wrap-goodthings').hide();
+
+          $('.file-upload-image-goodthings').attr('src', e.target.result);
+          $('.file-upload-content-goodthings').show();
+
+          $('.image-title-goodthings').html(input.files[0].name);
+        };
+
+        reader.readAsDataURL(input.files[0]);
+      } else {
+        removeUpload();
+      }
+    }
+
+    function removeUpload() {
+      $('.file-upload-input-goodthings').replaceWith($('.file-upload-input-goodthings').clone());
+      $('.file-upload-content-goodthings').hide();
+      $('.image-upload-wrap-goodthings').show();
+    }
+    $('.image-upload-wrap-goodthings').bind('dragover', function() {
+      $('.image-upload-wrap-goodthings').addClass('image-dropping-goodthings');
+    });
+    $('.image-upload-wrap-goodthings').bind('dragleave', function() {
+      $('.image-upload-wrap-goodthings').removeClass('image-dropping-goodthings');
+    });
+
+    (function() {
+      'use strict';
+      window.addEventListener('load', function() {
+        // Fetch all the forms we want to apply custom Bootstrap validation styles to
+        var forms = document.getElementsByClassName('needs-validation');
+        // Loop over them and prevent submission
+        var validation = Array.prototype.filter.call(forms, function(form) {
+          form.addEventListener('submit', function(event) {
+            if (form.checkValidity() === false) {
+              event.preventDefault();
+              event.stopPropagation();
+            }
+            form.classList.add('was-validated');
+          }, false);
+        });
+      }, false);
+    })();
+  </script>
+</body>
+
+</html>

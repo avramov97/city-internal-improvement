@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+
+<head>
+    <title th:text="|Неготино - ${talent.getTitle()}"></title>
+    <th:block th:replace="fragments/head"></th:block>
+</head>
+
+<body>
+<th:block th:replace="fragments/navbar"></th:block>
+
+<!-- ##### Post Details Area Start ##### -->
+<section class="post-news-area mt-5 mb-2">
+    <div class="container">
+        <div class="row justify-content-center">
+            <!-- Post Details Content Area -->
+            <div class="col-12 col-lg-8">
+                <div class="post-details-title-area bg-overlay clearfix" th:style="|background:url(data:image/jpeg;base64,${imageEncoder.generateBase64Image(talent.getImgData(),defaultImageTalent)}); background-size: cover;|" >
+                    <div class="h-100">
+                        <div class="row h-100">
+                            <div class="col-12 col-lg-11">
+                                <!-- Post Content -->
+                                <div class="post-content">
+                                    <p class="tag ml-3" style="min-width: 300px">
+                                        <span th:text="|${talent.getFirstName()}  ${talent.getLastName()}|"></span>
+                                    </p>
+                                    <p th:text="${talent.getTitle()}" class="post-title ml-2"></p>
+                                    <span th:text="|${talent.getOccupation()}|" class="post-date ml-2 mt-2"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="post-details-content mt-5 mb-100">
+                    <p th:text="${talent.getText()}"></p>
+                    <div class="d-flex justify-content-center mt-5">
+                        <div class="fb-share-button mr-3"
+                             th:attr="data-href=|/talents/single-talent/${talent.getId()}|"
+                             data-layout="button_count" data-size="large">
+                        </div>
+                        <a href="https://twitter.com/share?ref_src=twsrc%5Etfw" class="twitter-share-button ml-5" data-size="large" data-show-count="false">Tweet</a><script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sidebar Widget -->
+            <div class="col-12 col-sm-9 col-md-6 col-lg-4">
+                <div class="sidebar-area">
+
+                    <!-- Latest News Widget -->
+                    <div class="single-widget-area news-widget mb-30">
+                        <h4 class="border-bottom border-danger th:if">Последни Таленти</h4>
+
+                        <div class="single-blog-post d-flex style-4 mb-30" th:each="getTalent : ${top10ApprovedTalents}" th:if="${getTalent.getId() != talent.getId()}">
+
+                            <!-- Blog Thumbnail -->
+                            <div class="blog-thumbnail">
+                                <a href="#">
+                                    <img class="latest-news" th:src=" 'data:image/jpeg;base64,'+ ${imageEncoder.generateBase64Image(getTalent.getImgData(),defaultImageTalent)}" alt="No image" />
+                                </a>
+                            </div>
+                            <!-- Blog Content -->
+                            <div class="blog-content">
+                                <span th:text="|${getTalent.getFirstName()}  ${getTalent.getLastName()}|" class="post-date"></span>
+                                <a th:text="${getTalent.getTitle()}" th:href="|/talents/single-talent/${getTalent.getId()}|" class="post-title"></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- ##### Post Details Area End ##### -->
+
+<!-- Footer -->
+<th:block th:replace="fragments/footer"></th:block>
+
+<script src="js/jquery/jquery-2.2.4.min.js"></script>
+<th:block th:replace="fragments/js"></th:block>
+
+<div id="fb-root"></div>
+<script>
+    // Facebook
+    (function(d, s, id) {
+        var js, fjs = d.getElementsByTagName(s)[0];
+        if (d.getElementById(id)) return;
+        js = d.createElement(s); js.id = id;
+        js.src = "https://connect.facebook.net/en_US/sdk.js#xfbml=1&version=v3.0";
+        fjs.parentNode.insertBefore(js, fjs);
+    }(document, 'script', 'facebook-jssdk'));
+</script>
+</body>
+
+</html>

@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:spring="">
+<head>
+    <title>Неготино - Таленти</title>
+    <th:block th:replace="fragments/head"></th:block>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <sciprt src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.2/dist/jquery.validate.js"</src>
+</head>
+<spring:htmlEscape defaultHtmlEscape="true" />
+<body>
+<th:block th:replace="fragments/navbar"></th:block>
+
+<th:block th:if="${approvedTalents != null and approvedTalents.size() >= 3}">
+    <header class="pt-5 border-dark bg-secondary">
+        <div class="container">
+            <div id="ThumbnailCarousel" class="carousel slide col-md-12 col-xs-12" data-ride="carousel">
+                <div class="row mt-15">
+                    <div class="carousel-inner">
+                        <th:block th:each="i : ${#numbers.sequence(0,approvedTalents.size()/3-1)}">
+                            <div class="carousel-item " th:classappend="${i == 0 ? 'active' : ''}">
+                                <div class="row">
+                                    <!--                <div class="col-md-4 col-sm-6" th:each="talent, iterator : ${firstSequenceNewestTalents}">-->
+                                    <div class="col-md-4 col-sm-6" th:each="j : ${#numbers.sequence(0,2)}">
+                                        <div class="box2">
+                                            <img th:src=" 'data:image/jpeg;base64,'+ ${imageEncoder.generateBase64Image(approvedTalents.get(i*3+j).getImgData(),defaultImageTalent)}" alt="" />
+                                            <div class="box-content">
+                                                <div class="inner-content">
+                                                    <h3 class="title text-white" th:text="${approvedTalents.get(i*3+j).getFirstName()}"></h3>
+                                                    <span class="post" th:text="${approvedTalents.get(i*3+j).getOccupation()}"></span>
+                                                    <ul class="icon">
+                                                        <li><a th:href="${approvedTalents.get(i*3+j).getFacebook()}"><i class="far fa-user-circle"></i></a></li>
+                                                        <li><a th:href="${approvedTalents.get(i*3+j).getInstagram()}"><i class="fa fa-link"></i></a></li>
+                                                        <!--                Here new ideas are welcome                  -->
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </th:block>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+</th:block>
+
+<!-- Approved talents -->
+<div class="approved-talents mt-2">
+    <th:block th:each="talent, iterator : ${approvedTalents}">
+        <section>
+            <div class="container">
+                <div class="row align-items-center">
+                    <div class="col-lg-6" th:classappend="${iterator.even ? 'order-lg-2' : '' }">
+                        <div class="p-5">
+                            <div class="box16 rounded-circle">
+                                <img th:src=" 'data:image/jpeg;base64,'+ ${imageEncoder.generateBase64Image(talent.getImgData(),defaultImageTalent)}" alt="" />
+                                <div class="box-content">
+                                    <h3 class="title text-white" th:text="|${talent.getFirstName()}  ${talent.getLastName()}|"></h3>
+                                    <span class="post pb-4" th:text="${talent.getOccupation()}"></span>
+                                    <ul class="social">
+                                        <li><a th:href="${talent.getFacebook()}"><i class="fa fa-facebook"></i></a></li>
+                                        <!--                      <li><a href="#"><i class="fa fa-twitter"></i></a></li>-->
+                                        <li><a th:href="${talent.getInstagram()}"><i class="fa fa-instagram"></i></a></li>
+                                        <li><a th:href="|/talents/single-talent/${talent.getId()}|"><i class="fa fa-link"></i></a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-6" th:classappend="${iterator.even ? 'order-lg-1' : '' }">
+                        <div class="p-5">
+                            <a th:text="${talent.getTitle()}" class="link-style-talent" th:href="|/talents/single-talent/${talent.getId()}|"></a>
+                            <p class="pt-3" th:text="|${#strings.substring(talent.getText(),0,350)}...|" th:if="${talent.getText().length() > 350}"></p>
+                            <p class="pt-3" th:text="${talent.getText()}" th:unless="${talent.getText().length() > 350}"></p>
+                            <form sec:authorize="hasAuthority('ADMIN')" method="POST" style="float:right;" th:action="@{/talents/discard}" onsubmit="return confirm('Do you really want to delete the talent?');">
+                                <input type="hidden" name="talentDiscardId" id="lbl" th:value="${talent.getId()}" />
+                                <button type="submit" name="discard" id="discard" value="value" class="btn btn-danger">Discard</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </th:block>
+</div>
+
+<!-- Add talent ( This can be put as new row in approved talents ) -->
+<section sec:authorize="hasAuthority('ROLE_USER')" class="border-top bg-light">
+    <div class="container">
+        <form id="form-add" method="post" th:action="@{/}" class="needs-validation" th:object="${talent}" enctype="multipart/form-data" htmlEscape="true" novalidate>
+            <div class="row">
+                <div class="col-lg-6" th:classappend="${approvedTalents.size()%2 == 1 ? 'order-lg-2' : '' }">
+                    <div class="p-5">
+                        <!-- <button class="file-upload-btn" type="button" onclick="$('.file-upload-input').trigger( 'click' )">Add Image</button> -->
+                        <div class="image-upload-wrap rounded-circle">
+                            <input class="file-upload-input" type='file' name="files" onchange="readURL(this);" accept="image/*" />
+                            <div class="drag-text">
+                                <h3>Додади фотографија</h3>
+                            </div>
+                        </div>
+                        <div class="file-upload-content">
+                            <img class="file-upload-image rounded-circle" alt="your image" />
+                            <div class="image-title-wrap mt-2">
+                                <button type="button" id="removeImage" onclick="removeUpload()" class="remove-image">Remove <span class="image-title">Uploaded Image</span></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6" th:classappend="${approvedTalents.size()%2 == 1 ? 'order-lg-1' : '' }">
+                    <div class="p-5">
+                        <div class="form-row">
+                            <div class="col-12">
+                                <input type="text" th:field="*{title}" id="make" class="form-control" placeholder="Наслов" required>
+                                <div class="invalid-feedback">
+                                    Воведи наслов
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-row mt-2">
+                            <div class="col-6">
+                                <input type="text" th:field="*{firstName}" class="form-control" placeholder="Име" required>
+                                <div class="invalid-feedback">
+                                    Воведи име
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <input type="text" th:field="*{lastName}"  class="form-control" placeholder="Презиме" required>
+                                <div class="invalid-feedback">
+                                    Воведи презиме
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-row mt-2">
+                            <div class="col-12">
+                                <input type="text" th:field="*{occupation}" id="occupation" class="form-control" placeholder="Дејност (Музичар, Спортист итн.)" required>
+                                <div class="invalid-feedback">
+                                    Воведи дејност
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group mt-2">
+                  <textarea th:field="*{text}" class="form-control" id="exampleFormControlTextarea1" placeholder="Сподели го твојот или талентот на некој познат.     Објави ги способностите, достигнувањата, историјата, соновите и покажи дека Неготино има личности што претставуваат гордост на самиот град."
+                            rows="8" required></textarea>
+                            <div class="invalid-feedback">
+                                Опиши го талентот
+                            </div>
+                        </div>
+                        <div class="form-row mt-2">
+                            <div class="col-6">
+                                <input type="text" th:field="*{facebook}" class="form-control" placeholder="Facebook" required>
+                            </div>
+                            <div class="col-6">
+                                <input type="text" th:field="*{instagram}" class="form-control" placeholder="Instagram" required>
+                            </div>
+                        </div>
+                        <button class="btn btn-dark float-right mt-3" id="submitButton" type="submit">Сподели</button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</section>
+
+<!-- Requested talents -->
+<div id="req-talents" sec:authorize="hasAuthority('MODERATOR')" class="requested-talents m-2">
+
+    <div class="container mb-2 mt-3 border-bottom border-dark" th:if="${requestedTalents.size() == 0}">
+        <h3 style="text-align:center">Requested Talents</h3>
+    </div>
+    <div class="container mb-2 mt-3 border-bottom border-dark" th:unless="${requestedTalents.size() == 0}">
+        <h3 style="text-align:center" th:text="|Requested Talents - ${requestedTalents.size()}"></h3>
+    </div>
+<!--    <div class="container mb-2 mt-3 border-bottom border-dark" th:if="${requestedTalents.size() == 0}">-->
+<!--        <h3 style="text-align:center">Requested Talents</h3>-->
+<!--    </div>-->
+
+    <th:block class="p-3" th:if="${requestedTalents.size() == 0}">
+        <p style="text-align:center">There are no requested Talents</p>
+    </th:block>
+    <th:block class="p-3" th:unless="${requestedTalents.size() == 0}">
+        <section th:each="talent,iterator : ${requestedTalents}">
+            <div class="container">
+                <div class="row align-items-center">
+                    <div class="col-lg-6" th:classappend="${iterator.even ? 'order-lg-2' : '' }">
+                        <div class="p-5">
+                            <div class="box16 rounded-circle">
+                                <img th:src=" 'data:image/jpeg;base64,'+ ${imageEncoder.generateBase64Image(talent.getImgData(),defaultImageTalent)}" alt="" />
+                                <div class="box-content">
+                                    <h3 class="title text-white" th:text="|${talent.getFirstName()}  ${talent.getLastName()}|"></h3>
+                                    <span class="post pb-4" th:text="${talent.getOccupation()}"></span>
+                                    <ul class="social">
+                                        <li><a th:href="${talent.getFacebook()}"><i class="fa fa-facebook"></i></a></li>
+                                        <li><a th:href="${talent.getInstagram()}"><i class="fa fa-instagram"></i></a></li>
+                                        <li><a href="#"><i class="fa fa-link"></i></a></li>
+                                        <!--                      <li><a href="#"><i class="fa fa-twitter"></i></a></li>-->
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-6" th:classappend="${iterator.even ? 'order-lg-1' : '' }">
+                        <div class="p-5">
+                            <h2 th:text="${talent.getTitle()}" class="display-5"></h2>
+                            <p class="pt-3" th:text="${talent.getText()}">
+                            </p>
+                            <form method="post" th:action="@{/talents/approve}" style="float:left;">
+                                <input type="hidden" id="lbl15" name="talentApproveId" th:value="${talent.getId()}" />
+                                <button type="submit" name="approve" id="approveReqTalent" value="value4" class="btn btn-success">Approve</button>
+                            </form>
+                            <form id="form-req-discard" method="POST" style="float:right;" th:action="@{/talents/discard}" onsubmit="return confirm('Do you really want to discard the talent?');">
+                                <input type="hidden" name="talentDiscardId" id="lbl" th:value="${talent.getId()}" />
+                                <button type="submit" name="discard" id="discardReqTalent" value="value" class="btn btn-danger">Discard</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <div class="container mb-2 mt-3 border-top border-dark">
+            <div class="row mt-2">
+                <div class="col-lg-12">
+                    <form method="POST" style="float:left;" th:action="@{/talents/approve-all}" th:object="${talent}" onsubmit="return confirm('Do you really want to approve all the requested talents?');">
+                        <input type="hidden" name="talent-discard-all" id="lblDiscardAll" />
+                        <button type="submit" name="approve-all" id="approve-all" value="value" class="btn btn-outline-success">Approve All</button>
+                    </form>
+
+                    <form method="POST" style="float:right;" th:action="@{/talents/discard-all}" th:object="${talent}" onsubmit="return confirm('Do you really want to discard all the requested talents?');">
+                        <input type="hidden" name="talent-approve-all" id="lblAproveAll" />
+                        <button type="submit" name="approve-all" id="discard-all" value="value" class="btn btn-outline-danger">Discard All</button>
+                    </form>
+                </div>
+
+            </div>
+        </div>
+    </th:block>
+</div>
+
+<!--<button type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#success_tic">Open Modal</button>-->
+
+<!-- Modal -->
+<th:block th:replace="fragments/modal"></th:block>
+
+
+<!-- Footer -->
+<th:block th:replace="fragments/footer"></th:block>
+
+<!--  Java Script files-->
+<th:block th:replace="fragments/js"></th:block>
+
+<script>
+    
+
+    (function() {
+        'use strict';
+        window.addEventListener('load', function() {
+            // Fetch all the forms we want to apply custom Bootstrap validation styles to
+            var forms = document.getElementsByClassName('needs-validation');
+            // Loop over them and prevent submission
+            var validation = Array.prototype.filter.call(forms, function(form) {
+                form.addEventListener('submit', function(event) {
+                    if (form.checkValidity() === false) {
+                        form.classList.add('was-validated');
+                        event.preventDefault();
+                        event.stopPropagation();
+                    }
+                    else
+                    {
+                        event.preventDefault();
+                        event.stopPropagation();
+
+                        var formData = new FormData($('.needs-validation')[0]);
+                        // var formData = new FormData("this");
+
+                        $.ajax({
+                            url: "/talents/add",
+                            method: "POST",
+                            // data: $('#form-add').serializeArray(),
+                            data: formData,
+                            success: function (data, textStatus)
+                            {
+                                $("#success_tic").modal();
+                                $("#req-talents").replaceWith(data); // upd
+                            },
+                            contentType: false,
+                            processData: false,
+                            cache: false,
+                        });
+
+                        $("#removeImage").click();
+                        form.classList.remove('was-validated');
+                        form.reset();
+                    }
+                }, false);
+
+            });
+
+        }, false);
+
+    })();
+
+    // $('.meto').submit(function (e)
+    // {
+    //     e.preventDefault();
+    //     alert("AHAA");
+    //     // let formData = new FormData($('#meto')[0]);
+    //
+    //     $.ajax({
+    //         url: "/talents/approve",
+    //         method: "POST",
+    //         data: $('.meto').serialize(),
+    //         // data: formData,
+    //         success: function (data)
+    //         {
+    //             alert(data);
+    //             console.log(data);
+    //             //   $("#req-talents").replaceWith(data); // upd
+    //         }
+    //     });
+    //
+    // });
+
+    $(document).keydown(function(event) {
+        if (event.keyCode == 27)
+        {
+            // $("#close-modal-login").click();
+            $('.close').click();
+        }
+    });
+
+    function readURL(input) {
+        if (input.files && input.files[0]) {
+
+            var reader = new FileReader();
+
+            reader.onload = function(e) {
+                $('.image-upload-wrap').hide();
+
+                $('.file-upload-image').attr('src', e.target.result);
+                $('.file-upload-content').show();
+
+                $('.image-title').html(input.files[0].name);
+            };
+
+            reader.readAsDataURL(input.files[0]);
+
+        } else {
+            removeUpload();
+        }
+    }
+
+    function removeUpload() {
+        $('.file-upload-input').replaceWith($('.file-upload-input').clone());
+        $('.file-upload-content').hide();
+        $('.image-upload-wrap').show();
+    }
+    $('.image-upload-wrap').bind('dragover', function() {
+        $('.image-upload-wrap').addClass('image-dropping');
+    });
+    $('.image-upload-wrap').bind('dragleave', function() {
+        $('.image-upload-wrap').removeClass('image-dropping');
+    });
+
+
+</script>
+
+</body>
+
+</html>
